@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'choose_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +32,7 @@ class HomeScreen extends StatelessWidget {
               PlayButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ChooseScreen()));
+                      MaterialPageRoute(builder: (context) => GameModeScreen()));
                 },
               ),
             ],
@@ -44,7 +46,7 @@ class HomeScreen extends StatelessWidget {
 class GradientBackground extends StatelessWidget {
   final Widget child;
 
-  GradientBackground({required this.child});
+  const GradientBackground({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +73,7 @@ class GradientBackground extends StatelessWidget {
 class PlayButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  PlayButton({required this.onPressed});
+  const PlayButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +97,8 @@ class PlayButton extends StatelessWidget {
 }
 
 class PlayText extends StatelessWidget {
+  const PlayText({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Text(

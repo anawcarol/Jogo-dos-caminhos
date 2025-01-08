@@ -1,44 +1,49 @@
-// lib/components/home_screen.dart
 import 'package:flutter/material.dart';
+import 'home_screen.dart';
 
-class ChooseScreen extends StatelessWidget {
+class GameModeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GradientBackground(
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,  // Centraliza verticalmente
-            crossAxisAlignment: CrossAxisAlignment.center,  // Centraliza horizontalmente
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Choose the Game Mode',
+                style: TextStyle(fontSize: 24),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica para iniciar o modo jogador vs jogador
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person),
+                    Text(' vs '),
+                    Icon(Icons.person),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica para iniciar o modo jogador vs máquina
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person),
+                    Text(' vs '),
+                    Icon(Icons.smart_toy),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
-
-class GradientBackground extends StatelessWidget {
-  final Widget child;
-
-  GradientBackground({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFF3088BE), // Cor inicial
-            Color(0xFF163F58), // Cor final
-          ],
-          stops: [0.3, 1.0], // Define a posição das cores no degradê (30% e 100%)
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: child,
-    );
-  }
-}
-
-
