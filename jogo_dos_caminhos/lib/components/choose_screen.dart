@@ -14,7 +14,8 @@ class GameModeScreen extends StatelessWidget {
           children: [
             // Botão de voltar no topo
             Padding(
-              padding: EdgeInsets.all(screenWidth * 0.04), // 4% da largura da tela
+              padding:
+                  EdgeInsets.all(screenWidth * 0.04), // 4% da largura da tela
               child: Align(
                 alignment: Alignment.topLeft,
                 child: ElevatedButton(
@@ -25,7 +26,8 @@ class GameModeScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
                     backgroundColor: Color(0xFF3088BE),
-                    padding: EdgeInsets.all(screenWidth * 0.05), // 5% da largura
+                    padding:
+                        EdgeInsets.all(screenWidth * 0.05), // 5% da largura
                     shadowColor: Colors.transparent,
                     side: BorderSide(
                       color: Color(0xFFF5B51C),
@@ -56,60 +58,71 @@ class GameModeScreen extends StatelessWidget {
             ),
 
             // Botão Jogador vs Jogador
-            ElevatedButton(
-              onPressed: () {
-                // Lógica para iniciar o modo jogador vs jogador
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFF5B51C),
-                padding: EdgeInsets.symmetric(
-                  vertical: screenHeight * 0.02, // 2% da altura
-                  horizontal: screenWidth * 0.1, // 10% da largura
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.person, size: screenWidth * 0.06),
-                  SizedBox(width: screenWidth * 0.02), // Espaçamento entre os ícones
-                  Text(
-                    'vs',
-                    style: TextStyle(fontSize: screenWidth * 0.05),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.20,
+              width: MediaQuery.of(context).size.width * 0.80,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Lógica para iniciar o modo jogador vs jogador
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFF5B51C),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  SizedBox(width: screenWidth * 0.02),
-                  Icon(Icons.person, size: screenWidth * 0.06),
-                ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person,
+                        size: screenWidth * 0.15, color: Color(0xFF257F98)),
+                    SizedBox(
+                        width:
+                            screenWidth * 0.02), // Espaçamento entre os ícones
+                    Image.asset(
+                      'assets/imagens/image_vs.png' 
+                    ),
+                    SizedBox(width: screenWidth * 0.02),
+                    Icon(Icons.person,
+                        size: screenWidth * 0.15, color: Color(0xFF257F98)),
+                  ],
+                ),
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.02), // Espaçamento entre os botões
+            SizedBox(
+                height: screenHeight * 0.02), // Espaçamento entre os botões
 
             // Botão Jogador vs Máquina
-            ElevatedButton(
-              onPressed: () {
-                // Lógica para iniciar o modo jogador vs máquina
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFF5B51C),
-                padding: EdgeInsets.symmetric(
-                  vertical: screenHeight * 0.02,
-                  horizontal: screenWidth * 0.1,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.person, size: screenWidth * 0.06),
-                  SizedBox(width: screenWidth * 0.02),
-                  Text(
-                    'vs',
-                    style: TextStyle(fontSize: screenWidth * 0.05),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.20,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Lógica para iniciar o modo jogador vs máquina
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFF5B51C),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  SizedBox(width: screenWidth * 0.02),
-                  Icon(Icons.smart_toy, size: screenWidth * 0.06),
-                ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person,
+                        size: screenWidth * 0.15, color: Color(0xFF257F98)),
+                    SizedBox(width: screenWidth * 0.02),
+                    Image.asset(
+                      'assets/imagens/image_vs.png' 
+                    ),
+                    SizedBox(width: screenWidth * 0.02),
+                    Icon(Icons.smart_toy,
+                        size: screenWidth * 0.15, color: Color(0xFF257F98)),
+                  ],
+                ),
               ),
             ),
 
