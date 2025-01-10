@@ -40,6 +40,23 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+      // Botão de informação no canto inferior direito
+      floatingActionButton: Padding(
+        padding: EdgeInsets.all(screenWidth * 0.04),
+        child: FloatingActionButton(
+          onPressed: () {
+            // Lógica para exibir informações
+          },
+          backgroundColor: const Color(0xFF3088BE),
+          shape: const CircleBorder(),
+          child: Icon(
+            Icons.info_outline,
+            size: screenWidth * 0.08, // Tamanho dinâmico
+            color: const Color(0xFFF5B51C),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop, // Posição no canto inferior direito
     );
   }
 }
@@ -81,7 +98,7 @@ class PlayButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xFF3088BE),
         padding: EdgeInsets.all(screenWidth * 0.08), // Dinâmico
         shadowColor: Colors.transparent,
         side: const BorderSide(
