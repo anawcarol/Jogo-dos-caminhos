@@ -1,4 +1,3 @@
-// lib/components/home_screen.dart
 import 'package:flutter/material.dart';
 import 'choose_screen.dart';
 
@@ -7,32 +6,34 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: GradientBackground(
         child: Center(
           child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Centraliza verticalmente
-            crossAxisAlignment:
-                CrossAxisAlignment.center, // Centraliza horizontalmente
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Stack(
                 alignment: Alignment.center,
                 children: [
                   Icon(
                     Icons.location_on,
-                    color: Colors.black
-                        .withOpacity(0.1), // Cor do ícone e opacidade
-                    size: 300, // Tamanho do ícone
+                    color: Colors.black.withOpacity(0.1),
+                    size: screenWidth * 0.7, // Proporção dinâmica
                   ),
-                  PlayText(), // Exibindo o texto "Jogo dos Caminhos"
+                  const PlayText(),
                 ],
               ),
-              SizedBox(height: 20), // Espaço entre o texto e o botão
+              SizedBox(height: screenHeight * 0.02), // Espaçamento proporcional
               PlayButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => GameModeScreen()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GameModeScreen()),
+                  );
                 },
               ),
             ],
@@ -51,17 +52,13 @@ class GradientBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
             Color(0xFF163F58),
-            Color(0xFF3088BE), // Cor inicial
-             // Cor final
+            Color(0xFF3088BE),
           ],
-          stops: [
-            0.3,
-            1.0
-          ], // Define a posição das cores no degradê (30% e 100%)
+          stops: [0.3, 1.0],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -78,20 +75,24 @@ class PlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        shape: CircleBorder(), backgroundColor: Colors.transparent,
-        padding: EdgeInsets.all(20),
+        shape: const CircleBorder(),
+        backgroundColor: Colors.transparent,
+        padding: EdgeInsets.all(screenWidth * 0.08), // Dinâmico
         shadowColor: Colors.transparent,
-        side: BorderSide(
-            color: Color(0xFFF5B51C),
-            width: 3), // Borda circular com cor F5B51C
+        side: const BorderSide(
+          color: Color(0xFFF5B51C),
+          width: 3,
+        ),
       ),
       child: Icon(
         Icons.play_arrow,
-        color: Color(0xFFF5B51C), // Cor do ícone igual ao texto
-        size: 50,
+        color: const Color(0xFFF5B51C),
+        size: screenWidth * 0.15, // Dinâmico
       ),
     );
   }
@@ -102,13 +103,15 @@ class PlayText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Text(
       'Jogo\n dos\n Caminhos',
-      textAlign: TextAlign.center, // Alinhando o texto no centro
+      textAlign: TextAlign.center,
       style: TextStyle(
-        fontFamily: 'Aclonica', // Usando a fonte Aclonica
-        fontSize: 50,
-        color: Color(0xFFF5B51C), // Cor do texto F5B51C
+        fontFamily: 'Aclonica',
+        fontSize: screenWidth * 0.1, // Dinâmico
+        color: const Color(0xFFF5B51C),
       ),
     );
   }
