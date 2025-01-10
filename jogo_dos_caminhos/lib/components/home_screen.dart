@@ -40,23 +40,27 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      // Botão de informação no canto inferior direito
+      // Botão de informação no canto superior direito com fundo redondo
       floatingActionButton: Padding(
         padding: EdgeInsets.all(screenWidth * 0.04),
-        child: FloatingActionButton(
+        child: ElevatedButton(
           onPressed: () {
             // Lógica para exibir informações
           },
-          backgroundColor: const Color(0xFF3088BE),
-          shape: const CircleBorder(),
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            backgroundColor: const Color(0xFF3088BE), // Cor do fundo
+            padding: EdgeInsets.all(screenWidth * 0), // Ajuste o tamanho do botão
+            shadowColor: Colors.transparent,
+          ),
           child: Icon(
             Icons.info_outline,
-            size: screenWidth * 0.08, // Tamanho dinâmico
+            size: screenWidth * 0.1, // Tamanho dinâmico do ícone
             color: const Color(0xFFF5B51C),
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop, // Posição no canto inferior direito
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop, // Posicionamento no topo direito
     );
   }
 }
