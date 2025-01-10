@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
+import 'roles_screen.dart';
 
 class GameModeScreen extends StatelessWidget {
   @override
@@ -80,9 +81,7 @@ class GameModeScreen extends StatelessWidget {
                     SizedBox(
                         width:
                             screenWidth * 0.02), // Espaçamento entre os ícones
-                    Image.asset(
-                      'assets/imagens/image_vs.png' 
-                    ),
+                    Image.asset('assets/imagens/image_vs.png'),
                     SizedBox(width: screenWidth * 0.02),
                     Icon(Icons.person,
                         size: screenWidth * 0.15, color: Color(0xFF257F98)),
@@ -100,7 +99,10 @@ class GameModeScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.8,
               child: ElevatedButton(
                 onPressed: () {
-                  // Lógica para iniciar o modo jogador vs máquina
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HowToPlayScreen()),
+                  ); // Lógica para iniciar o modo jogador vs máquina
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFF5B51C),
@@ -115,9 +117,7 @@ class GameModeScreen extends StatelessWidget {
                     Icon(Icons.person,
                         size: screenWidth * 0.15, color: Color(0xFF257F98)),
                     SizedBox(width: screenWidth * 0.02),
-                    Image.asset(
-                      'assets/imagens/image_vs.png' 
-                    ),
+                    Image.asset('assets/imagens/image_vs.png'),
                     SizedBox(width: screenWidth * 0.02),
                     Icon(Icons.smart_toy,
                         size: screenWidth * 0.15, color: Color(0xFF257F98)),
