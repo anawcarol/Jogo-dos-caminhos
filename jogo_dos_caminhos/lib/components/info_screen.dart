@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jogo_dos_caminhos/components/home_screen.dart';
 
 class GameInfoScreen extends StatelessWidget {
   @override
@@ -35,6 +36,8 @@ class GameInfoScreen extends StatelessWidget {
                     _buildCircularButton(
                       icon: Icons.home,
                       onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => HomeScreen()));
                         // lógica para botão
                       },
                     ),

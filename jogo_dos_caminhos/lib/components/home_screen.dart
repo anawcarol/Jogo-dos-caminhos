@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'choose_screen.dart';
+import 'package:jogo_dos_caminhos/components/info_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -45,6 +46,10 @@ class HomeScreen extends StatelessWidget {
         padding: EdgeInsets.all(screenWidth * 0.04),
         child: ElevatedButton(
           onPressed: () {
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GameInfoScreen()),
+                  );
             // Lógica para exibir informações
           },
           style: ElevatedButton.styleFrom(
