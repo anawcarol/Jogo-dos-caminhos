@@ -1,78 +1,62 @@
 import 'package:flutter/material.dart';
 import 'game_screen.dart'; // Importa a tela do jogo para navegação.
+import 'package:jogo_dos_caminhos/components/info_screen.dart';
 
 class LocationSelectionScreen extends StatefulWidget {
-  // Declaração de uma tela com estado mutável (StatefulWidget).
   @override
-  _LocationSelectionScreenState createState() =>
-      _LocationSelectionScreenState(); // Cria o estado associado ao widget.
+  _LocationSelectionScreenState createState() => _LocationSelectionScreenState();
 }
 
 class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
-  // Define o estado da tela.
-
-  // Lista de locais selecionados. Inicialmente, todos estão desmarcados (false).
   List<bool> selectedLocations = List.generate(16, (index) => false);
-
-  // Índices de locais restritos (não interativos), representando "1D" e "4A".
   final List<int> restrictedIndices = [3, 12];
 
   @override
   Widget build(BuildContext context) {
-    // Recupera a altura e a largura da tela para calcular dimensões responsivas.
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      // Scaffold fornece a estrutura básica para a tela, como fundo e layout.
       body: Container(
-        // Container principal com um gradiente de fundo.
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF163F58), Color(0xFF3088BE)], // Cores do gradiente.
-            stops: [0.3, 1.0], // Posição das cores no gradiente.
-            begin: Alignment.topLeft, // Início do gradiente.
-            end: Alignment.bottomRight, // Final do gradiente.
+            colors: [Color(0xFF163F58), Color(0xFF3088BE)],
+            stops: [0.3, 1.0],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
         child: SafeArea(
-          // Garante que o conteúdo não seja exibido sob áreas seguras, como o notch.
           child: Column(
-            // Disposição vertical dos widgets.
             children: [
               // Botões superiores de navegação.
               Padding(
                 padding: EdgeInsets.symmetric(
-                  vertical: screenHeight * 0.06, // Espaçamento vertical.
-                  horizontal: screenWidth * 0.02, // Espaçamento horizontal.
+                  vertical: screenHeight * 0.06,
+                  horizontal: screenWidth * 0.02,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  // Centraliza os botões.
                   children: [
                     _buildNavigationButton(
-                      // Botão de informações.
                       icon: Icons.info,
                       onPressed: () {
-                        // Função a ser executada ao pressionar (a ser implementada).
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => GameInfoScreen()),
+                        );
                       },
                     ),
-                    SizedBox(width: screenWidth * 0.05), // Espaçamento horizontal.
+                    SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
-                      // Botão de som.
                       icon: Icons.volume_up,
-                      onPressed: () {
-                        // Função para alternar som (a ser implementada).
-                      },
+                      onPressed: () {},
                     ),
-                    SizedBox(width: screenWidth * 0.05), // Espaçamento horizontal.
+                    SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
-                      // Botão de avançar.
                       icon: Icons.arrow_forward,
                       onPressed: selectedLocations.any((selected) => selected)
-                          // Só avança se algum local estiver selecionado.
                           ? () {
-                              // Navega para a tela de jogo, passando os locais selecionados.
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -82,74 +66,113 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                                 ),
                               );
                             }
-                          : () {}, // Faz nada se nenhum local estiver selecionado.
+                          : () {},
                     ),
                   ],
                 ),
               ),
-
-              // Título da página.
               Padding(
                 padding: EdgeInsets.only(top: screenHeight * 0.02),
                 child: Text(
-                  'Escolha um local!', // Texto do título.
+                  'Escolha um local!',
                   style: TextStyle(
-                    color: const Color(0xFFF5B51C), // Cor do texto.
-                    fontSize: screenWidth * 0.08, // Tamanho do texto.
-                    fontFamily: 'Aclonica', // Fonte personalizada.
+                    color: const Color(0xFFF5B51C),
+                    fontSize: screenWidth * 0.08,
+                    fontFamily: 'Aclonica',
                   ),
                 ),
               ),
-
-              // Grade de locais (16 no total).
+              SizedBox(height: screenHeight * 0.05),
               Expanded(
-                // O grid ocupa o restante do espaço vertical disponível.
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                   child: GridView.builder(
-                    // Constrói a grade dinamicamente.
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4, // 4 colunas.
-                      crossAxisSpacing: screenWidth * 0.02, // Espaçamento horizontal.
-                      mainAxisSpacing: screenHeight * 0.02, // Espaçamento vertical.
+                      crossAxisCount: 4,
+                      crossAxisSpacing: screenWidth * 0.02,
+                      mainAxisSpacing: screenHeight * 0.02,
                     ),
-                    itemCount: 16, // Total de locais.
+                    itemCount: 16,
                     itemBuilder: (context, index) {
-                      bool isRestricted =
-                          restrictedIndices.contains(index); // Verifica se é restrito.
-
+                      bool isRestricted = restrictedIndices.contains(index);
                       return GestureDetector(
-                        // Detecta interações do usuário.
                         onTap: isRestricted
-                            ? null // Se for restrito, não faz nada.
+                            ? null
                             : () {
                                 setState(() {
-                                  // Atualiza o estado para marcar apenas o local atual.
-                                  for (int i = 0;
-                                      i < selectedLocations.length;
-                                      i++) {
+                                  for (int i = 0; i < selectedLocations.length; i++) {
                                     selectedLocations[i] = i == index;
                                   }
                                 });
                               },
                         child: AnimatedContainer(
-                          // Container animado para mudanças visuais suaves.
-                          duration: const Duration(milliseconds: 300), // Duração da animação.
+                          duration: const Duration(milliseconds: 300),
                           decoration: BoxDecoration(
-                            // Aparência do local.
                             color: selectedLocations[index]
-                                ? Colors.green // Verde se selecionado.
+                                ? Colors.green
                                 : (isRestricted
-                                    ? Colors.grey // Cinza se restrito.
-                                    : Colors.black), // Preto por padrão.
-                            shape: BoxShape.circle, // Forma circular.
+                                    ? Colors.grey
+                                    : const Color.fromARGB(255, 39, 126, 136)),
+                            shape: BoxShape.circle,
                             border: Border.all(
-                                color: const Color(0xFFF5B51C), width: 3), // Borda dourada.
+                              color: const Color(0xFFF5B51C),
+                              width: 3,
+                            ),
                           ),
                         ),
                       );
                     },
                   ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.only(top: screenHeight * 0.02),
+                child: Text(
+                  '(Exceto o local de partida e chegada)',
+                  style: TextStyle(
+                    color: const Color(0xFFF5B51C),
+                    fontSize: screenWidth * 0.04,
+                    fontFamily: 'Aclonica',
+                  ),
+                ),
+              ),
+             SizedBox(height: screenHeight * 0.02),
+              // Ícones no final da página.
+              Padding(
+                padding: EdgeInsets.only(bottom: screenHeight * 0.02),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      flex: 2,
+                      child: Icon(
+                        Icons.person,
+                        size: screenWidth * 0.10,
+                        color: const Color(0xFF163F58),
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.03),
+                    Flexible(
+                      flex: 3,
+                      child: Image.asset(
+                        'assets/imagens/image_vs.png',
+                        width: screenWidth * 0.15,
+                        height: screenHeight * 0.08,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.03),
+                    Flexible(
+                      flex: 2,
+                      child: Icon(
+                        Icons.smart_toy,
+                        size: screenWidth * 0.10,
+                        color: const Color(0xFF163F58),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -159,27 +182,24 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
     );
   }
 
-  Widget _buildNavigationButton(
-      {required IconData icon, required VoidCallback onPressed}) {
-    // Constrói um botão circular de navegação.
+  Widget _buildNavigationButton({required IconData icon, required VoidCallback onPressed}) {
     final screenWidth = MediaQuery.of(context).size.width;
     return ElevatedButton(
-      onPressed: onPressed, // Função ao pressionar.
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        shape: const CircleBorder(), // Forma circular.
-        backgroundColor: const Color(0xFF3088BE), // Cor de fundo.
-        padding: EdgeInsets.all(screenWidth * 0.05), // Espaçamento interno.
-        shadowColor: Colors.transparent, // Sem sombra.
+        shape: const CircleBorder(),
+        backgroundColor: const Color(0xFF3088BE),
+        padding: EdgeInsets.all(screenWidth * 0.05),
+        shadowColor: Colors.transparent,
         side: const BorderSide(
-          // Borda dourada.
           color: Color(0xFFF5B51C),
           width: 3,
         ),
       ),
       child: Icon(
-        icon, // Ícone do botão.
-        size: screenWidth * 0.07, // Tamanho do ícone.
-        color: const Color(0xFFF5B51C), // Cor do ícone.
+        icon,
+        size: screenWidth * 0.07,
+        color: const Color(0xFFF5B51C),
       ),
     );
   }

@@ -12,7 +12,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   // Lista de bolas (4 verdes e 4 vermelhas)
-  List<Color> balls = [Colors.green, Colors.green, Colors.green, Colors.green, Colors.red, Colors.red, Colors.red, Colors.red];
+  List<Color> balls = [Colors.green, Colors.green, Colors.green, Colors.red, Colors.red, Colors.red];
 
   // Cor atual da bola sorteada
   Color ballColor = Colors.green;
