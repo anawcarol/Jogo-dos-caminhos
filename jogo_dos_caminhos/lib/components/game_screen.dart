@@ -11,39 +11,62 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  // Lista de bolas (4 verdes e 4 vermelhas)
   List<Color> balls = [Colors.green, Colors.green, Colors.green, Colors.red, Colors.red, Colors.red];
-
-  // Cor atual da bola sorteada
   Color ballColor = Colors.green;
   List<String> sortedBalls = [];
+  List<List<bool>> matrix = List.generate(4, (_) => List.filled(4, false));
+  List<List<bool>> yellowMatrix = List.generate(4, (_) => List.filled(4, false)); // Matriz para os locais amarelos
+  List<Offset> path = [];
+  int currentX = 0; // Linha inicial na matriz
+  int currentY = 0; // Coluna inicial na matriz
 
-  // Posições das células no tabuleiro
-  final Map<String, Offset> positions = {
-    '1A': Offset(0.1, 0.1),
-    '2A': Offset(0.3, 0.1),
-    '3A': Offset(0.5, 0.1),
-    '4A': Offset(0.7, 0.1),
-    '1B': Offset(0.1, 0.3),
-    '2B': Offset(0.3, 0.3),
-    '3B': Offset(0.5, 0.3),
-    '4B': Offset(0.7, 0.3),
-    '1C': Offset(0.1, 0.5),
-    '2C': Offset(0.3, 0.5),
-    '3C': Offset(0.5, 0.5),
-    '4C': Offset(0.7, 0.5),
-    '1D': Offset(0.1, 0.7),
-    '2D': Offset(0.3, 0.7),
-    '3D': Offset(0.5, 0.7),
-    '4D': Offset(0.7, 0.7),
-  };
+  @override
+  void initState() {
+    super.initState();
+    path.add(Offset(currentX.toDouble(), currentY.toDouble())); // Ponto inicial
+    matrix[currentX][currentY] = true; // Marcar o ponto inicial como visitado
+  }
 
-  // Função para sortear uma bola e desenhar a linha entre os pontos
   void _sortearBola() {
     setState(() {
-      // Sorteia uma bola da lista e remove ela
+      if (balls.isEmpty) return;
+
       ballColor = balls.removeAt(Random().nextInt(balls.length));
-      sortedBalls.add(ballColor == Colors.green ? "Green" : "Red");
+      String ballType = ballColor == Colors.green ? "Green" : "Red";
+      sortedBalls.add(ballType);
+
+      _calcularCaminho(ballColor);
+    });
+  }
+
+  void _calcularCaminho(Color bola) {
+    int nextX = currentX;
+    int nextY = currentY;
+
+    if (bola == Colors.green) {
+      // Movimenta-se para a direita, se possível
+      if (currentY + 1 < 4 && !matrix[currentX][currentY + 1]) {
+        nextY = currentY + 1;
+      }
+    } else {
+      // Movimenta-se para baixo, se possível
+      if (currentX + 1 < 4 && !matrix[currentX + 1][currentY]) {
+        nextX = currentX + 1;
+      }
+    }
+
+    // Atualizar posição
+    if (nextX != currentX || nextY != currentY) {
+      currentX = nextX;
+      currentY = nextY;
+      matrix[currentX][currentY] = true;
+      path.add(Offset(currentX.toDouble(), currentY.toDouble()));
+    }
+  }
+
+  void _selecionarLocal(int row, int col) {
+    setState(() {
+      yellowMatrix[row][col] = true; // Marca o local selecionado como amarelo
     });
   }
 
@@ -65,7 +88,6 @@ class _GameScreenState extends State<GameScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Top buttons (navigational buttons)
               Padding(
                 padding: EdgeInsets.symmetric(
                   vertical: screenHeight * 0.03,
@@ -77,17 +99,13 @@ class _GameScreenState extends State<GameScreen> {
                     _buildNavigationButton(
                       context,
                       icon: Icons.info,
-                      onPressed: () {
-                        // Handle info action
-                      },
+                      onPressed: () {},
                     ),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
                       context,
                       icon: Icons.volume_up,
-                      onPressed: () {
-                        // Handle sound toggle
-                      },
+                      onPressed: () {},
                     ),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
@@ -100,8 +118,6 @@ class _GameScreenState extends State<GameScreen> {
                   ],
                 ),
               ),
-
-              // Title
               Padding(
                 padding: EdgeInsets.only(top: screenHeight * 0.02),
                 child: Text(
@@ -113,8 +129,6 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               ),
-
-              // Grid for the game
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: GridView.builder(
@@ -127,17 +141,18 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                   itemCount: 16,
                   itemBuilder: (context, index) {
-                    String cell = "${(index % 4) + 1}${String.fromCharCode(65 + (index ~/ 4))}";
+                    int row = index ~/ 4;
+                    int col = index % 4;
                     return GestureDetector(
                       onTap: () {
-                        // Game interaction
+                        _selecionarLocal(row, col); // Marca o local ao clicar
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         decoration: BoxDecoration(
-                          color: widget.selectedLocations[index]
-                              ? Colors.green
-                              : Colors.black,
+                          color: yellowMatrix[row][col]
+                              ? Colors.yellow // Manter o local amarelo
+                              : (matrix[row][col] ? Colors.green : Colors.black),
                           shape: BoxShape.circle,
                           border: Border.all(
                               color: const Color(0xFFF5B51C), width: 3),
@@ -147,8 +162,6 @@ class _GameScreenState extends State<GameScreen> {
                   },
                 ),
               ),
-
-              // Bola sorteada
               Padding(
                 padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                 child: Column(
@@ -162,8 +175,6 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.02),
-
-                    // Exibe a bola sorteada
                     Container(
                       width: screenWidth * 0.2,
                       height: screenWidth * 0.2,
@@ -182,8 +193,6 @@ class _GameScreenState extends State<GameScreen> {
                   ],
                 ),
               ),
-
-              // Botão "Seguir" para realizar o sorteio
               Padding(
                 padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                 child: ElevatedButton(
@@ -206,11 +215,9 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               ),
-              
-              // Desenha a linha entre os pontos no tabuleiro
               CustomPaint(
                 size: Size(screenWidth, screenHeight),
-                painter: LinePainter(sortedBalls, positions),
+                painter: LinePainter(path),
               ),
             ],
           ),
@@ -219,7 +226,6 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // Função para criar os botões de navegação
   Widget _buildNavigationButton(
     BuildContext context, {
     required IconData icon,
@@ -247,35 +253,24 @@ class _GameScreenState extends State<GameScreen> {
   }
 }
 
-// CustomPainter para desenhar as linhas
 class LinePainter extends CustomPainter {
-  final List<String> sortedBalls;
-  final Map<String, Offset> positions;
+  final List<Offset> path;
 
-  LinePainter(this.sortedBalls, this.positions);
+  LinePainter(this.path);
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
+      ..strokeWidth = 5
+      ..style = PaintingStyle.stroke
+      ..color = Colors.yellow;
 
-    for (int i = 0; i < sortedBalls.length; i++) {
-      if (sortedBalls[i] == "Red") {
-        // Desenha a linha vermelha (entre 1D e 2D, por exemplo)
-        canvas.drawLine(
-          positions['1D']!,
-          positions['2D']!,
-          paint..color = Colors.red,
-        );
-      } else {
-        // Desenha a linha verde
-        canvas.drawLine(
-          positions['1D']!,
-          positions['1C']!,
-          paint..color = Colors.green,
-        );
-      }
+    for (int i = 0; i < path.length - 1; i++) {
+      Offset start = Offset(path[i].dy * size.width / 4 + size.width / 8,
+          path[i].dx * size.height / 4 + size.height / 8);
+      Offset end = Offset(path[i + 1].dy * size.width / 4 + size.width / 8,
+          path[i + 1].dx * size.height / 4 + size.height / 8);
+      canvas.drawLine(start, end, paint);
     }
   }
 
