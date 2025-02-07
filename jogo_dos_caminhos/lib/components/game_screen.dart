@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+// Variável global para armazenar o índice do botão selecionado
+int selectedButtonIndex = -1;
+
 class GameScreen extends StatefulWidget {
   final List<bool> selectedLocations;
 
@@ -17,7 +20,7 @@ class _GameScreenState extends State<GameScreen> {
   List<List<bool>> matrix = List.generate(4, (_) => List.filled(4, false));
   List<List<bool>> yellowMatrix = List.generate(4, (_) => List.filled(4, false)); // Matriz para os locais amarelos
   List<Offset> path = [];
-  int currentX = 0; // Linha inicial na matriz
+  int currentX = 3; // Linha inicial na matriz (começa de baixo)
   int currentY = 0; // Coluna inicial na matriz
 
   @override
@@ -49,9 +52,9 @@ class _GameScreenState extends State<GameScreen> {
         nextY = currentY + 1;
       }
     } else {
-      // Movimenta-se para baixo, se possível
-      if (currentX + 1 < 4 && !matrix[currentX + 1][currentY]) {
-        nextX = currentX + 1;
+      // Movimenta-se para cima, se possível
+      if (currentX - 1 >= 0 && !matrix[currentX - 1][currentY]) {
+        nextX = currentX - 1;
       }
     }
 
@@ -67,6 +70,12 @@ class _GameScreenState extends State<GameScreen> {
   void _selecionarLocal(int row, int col) {
     setState(() {
       yellowMatrix[row][col] = true; // Marca o local selecionado como amarelo
+    });
+  }
+
+  void _onNavigationButtonPressed(int index) {
+    setState(() {
+      selectedButtonIndex = index;
     });
   }
 
@@ -99,13 +108,15 @@ class _GameScreenState extends State<GameScreen> {
                     _buildNavigationButton(
                       context,
                       icon: Icons.info,
-                      onPressed: () {},
+                      onPressed: () => _onNavigationButtonPressed(0),
+                      index: 0,
                     ),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
                       context,
                       icon: Icons.volume_up,
-                      onPressed: () {},
+                      onPressed: () => _onNavigationButtonPressed(1),
+                      index: 1,
                     ),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
@@ -114,6 +125,7 @@ class _GameScreenState extends State<GameScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
+                      index: 2,
                     ),
                   ],
                 ),
@@ -230,13 +242,14 @@ class _GameScreenState extends State<GameScreen> {
     BuildContext context, {
     required IconData icon,
     required VoidCallback onPressed,
+    required int index,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
-        backgroundColor: const Color(0xFF3088BE),
+        backgroundColor: selectedButtonIndex == index ? Colors.orange : const Color(0xFF3088BE),
         padding: EdgeInsets.all(screenWidth * 0.05),
         shadowColor: Colors.transparent,
         side: const BorderSide(
@@ -267,15 +280,15 @@ class LinePainter extends CustomPainter {
 
     for (int i = 0; i < path.length - 1; i++) {
       Offset start = Offset(path[i].dy * size.width / 4 + size.width / 8,
-          path[i].dx * size.height / 4 + size.height / 8);
+          size.height - (path[i].dx * size.height / 4 + size.height / 8));
       Offset end = Offset(path[i + 1].dy * size.width / 4 + size.width / 8,
-          path[i + 1].dx * size.height / 4 + size.height / 8);
+          size.height - (path[i + 1].dx * size.height / 4 + size.height / 8));
       canvas.drawLine(start, end, paint);
     }
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
+    return true; // Repaint sempre que o caminho mudar
   }
 }
