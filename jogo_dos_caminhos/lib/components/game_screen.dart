@@ -196,7 +196,7 @@ class _GameScreenState extends State<GameScreen> {
               ),
               // Título.
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 100.0),
                 child: Text(
                   'Jogo em andamento',
                   style: TextStyle(
@@ -228,7 +228,7 @@ class _GameScreenState extends State<GameScreen> {
                           color: yellowMatrix[row][col]
                               ? Colors.yellow
                               : (matrix[row][col]
-                                  ? Colors.green
+                                  ? Colors.indigo[800]
                                   : const Color.fromARGB(255, 39, 126, 136)),
                           shape: BoxShape.circle,
                           border: Border.all(
@@ -256,7 +256,7 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                     SizedBox(height: 8.0),
                     Container(
-                      width: screenWidth * 0.2,
+                      width: screenWidth * 0.8,
                       height: screenWidth * 0.2,
                       decoration: BoxDecoration(
                         color: ballColor,
@@ -265,7 +265,7 @@ class _GameScreenState extends State<GameScreen> {
                           BoxShadow(
                             color: Colors.black.withOpacity(0.5),
                             blurRadius: 10,
-                            offset: const Offset(0, 5),
+                            offset: const Offset(5, 5),
                           ),
                         ],
                       ),

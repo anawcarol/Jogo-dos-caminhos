@@ -94,7 +94,7 @@ class GameInfoScreen extends StatelessWidget {
               _buildCircularButton(
                 icon: Icons.arrow_back,
                 onPressed: () {
-                  // Volta para a tela anterior.
+                  Navigator.pop(context);// Volta para a tela anterior.
                 },
                 isLarger: true,  // Passando um parâmetro para tornar o botão maior.
               ),
