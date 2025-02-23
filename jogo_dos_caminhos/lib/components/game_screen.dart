@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-// Variável global para armazenar o índice do botão selecionado
-int selectedButtonIndex = -1;
-
 class GameScreen extends StatefulWidget {
   final List<bool> selectedLocations;
 
@@ -14,20 +11,39 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  List<Color> balls = [Colors.green, Colors.green, Colors.green, Colors.red, Colors.red, Colors.red];
+  List<Color> balls = [
+    Colors.green,
+    Colors.green,
+    Colors.green,
+    Colors.red,
+    Colors.red,
+    Colors.red,
+  ];
   Color ballColor = Colors.green;
   List<String> sortedBalls = [];
+  // Matriz que marca as células visitadas (movimento do caminho).
   List<List<bool>> matrix = List.generate(4, (_) => List.filled(4, false));
-  List<List<bool>> yellowMatrix = List.generate(4, (_) => List.filled(4, false)); // Matriz para os locais amarelos
+  // Matriz para marcar a célula selecionada na tela anterior.
+  List<List<bool>> yellowMatrix = List.generate(4, (_) => List.filled(4, false));
   List<Offset> path = [];
-  int currentX = 3; // Linha inicial na matriz (começa de baixo)
-  int currentY = 0; // Coluna inicial na matriz
+  int currentX = 3; // Linha inicial (de baixo)
+  int currentY = 0; // Coluna inicial
+  bool? victory; // true se vitória, false se derrota
 
   @override
   void initState() {
     super.initState();
-    path.add(Offset(currentX.toDouble(), currentY.toDouble())); // Ponto inicial
-    matrix[currentX][currentY] = true; // Marcar o ponto inicial como visitado
+    // Inicializa o ponto de partida.
+    path.add(Offset(currentX.toDouble(), currentY.toDouble()));
+    matrix[currentX][currentY] = true;
+
+    // Marca a célula selecionada na primeira tela.
+    int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
+    if (selectedIndex != -1) {
+      int row = selectedIndex ~/ 4;
+      int col = selectedIndex % 4;
+      yellowMatrix[row][col] = true;
+    }
   }
 
   void _sortearBola() {
@@ -39,6 +55,11 @@ class _GameScreenState extends State<GameScreen> {
       sortedBalls.add(ballType);
 
       _calcularCaminho(ballColor);
+
+      // Quando não houver mais bolas, verifica vitória.
+      if (balls.isEmpty) {
+        _checkVictory();
+      }
     });
   }
 
@@ -47,18 +68,18 @@ class _GameScreenState extends State<GameScreen> {
     int nextY = currentY;
 
     if (bola == Colors.green) {
-      // Movimenta-se para a direita, se possível
+      // Movimento para a direita, se possível.
       if (currentY + 1 < 4 && !matrix[currentX][currentY + 1]) {
         nextY = currentY + 1;
       }
     } else {
-      // Movimenta-se para cima, se possível
+      // Movimento para cima, se possível.
       if (currentX - 1 >= 0 && !matrix[currentX - 1][currentY]) {
         nextX = currentX - 1;
       }
     }
 
-    // Atualizar posição
+    // Atualiza a posição se houver mudança.
     if (nextX != currentX || nextY != currentY) {
       currentX = nextX;
       currentY = nextY;
@@ -67,21 +88,63 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  void _selecionarLocal(int row, int col) {
-    setState(() {
-      yellowMatrix[row][col] = true; // Marca o local selecionado como amarelo
-    });
+  void _checkVictory() {
+    int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
+    if (selectedIndex != -1) {
+      int row = selectedIndex ~/ 4;
+      int col = selectedIndex % 4;
+      // Verifica se algum ponto do caminho corresponde à célula selecionada.
+      bool win = path.any((offset) => offset.dx.toInt() == row && offset.dy.toInt() == col);
+      victory = win;
+      // Exibe um diálogo com o resultado.
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(win ? "Vitória!" : "Derrota!"),
+          content: Text(win
+              ? "O caminho passou pela bola selecionada."
+              : "O caminho não passou pela bola selecionada."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
-  void _onNavigationButtonPressed(int index) {
-    setState(() {
-      selectedButtonIndex = index;
-    });
+  Widget _buildNavigationButton(
+    BuildContext context, {
+    required IconData icon,
+    required VoidCallback onPressed,
+    required int index,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Agora, todos os botões terão o mesmo background, seguindo o padrão da Location.
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: const CircleBorder(),
+        backgroundColor: const Color(0xFF3088BE),
+        padding: EdgeInsets.all(screenWidth * 0.05),
+        shadowColor: Colors.transparent,
+        side: const BorderSide(
+          color: Color(0xFFF5B51C),
+          width: 3,
+        ),
+      ),
+      child: Icon(
+        icon,
+        size: screenWidth * 0.07,
+        color: const Color(0xFFF5B51C),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -97,10 +160,11 @@ class _GameScreenState extends State<GameScreen> {
         child: SafeArea(
           child: Column(
             children: [
+              // Linha de navegação superior.
               Padding(
                 padding: EdgeInsets.symmetric(
-                  vertical: screenHeight * 0.03,
-                  horizontal: screenWidth * 0.04,
+                  vertical: 16.0,
+                  horizontal: 16.0,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -108,14 +172,14 @@ class _GameScreenState extends State<GameScreen> {
                     _buildNavigationButton(
                       context,
                       icon: Icons.info,
-                      onPressed: () => _onNavigationButtonPressed(0),
+                      onPressed: () {},
                       index: 0,
                     ),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
                       context,
                       icon: Icons.volume_up,
-                      onPressed: () => _onNavigationButtonPressed(1),
+                      onPressed: () {},
                       index: 1,
                     ),
                     SizedBox(width: screenWidth * 0.05),
@@ -130,8 +194,9 @@ class _GameScreenState extends State<GameScreen> {
                   ],
                 ),
               ),
+              // Título.
               Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.02),
+                padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   'Jogo em andamento',
                   style: TextStyle(
@@ -141,41 +206,44 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: screenWidth * 0.02,
-                    mainAxisSpacing: screenHeight * 0.02,
-                  ),
-                  itemCount: 16,
-                  itemBuilder: (context, index) {
-                    int row = index ~/ 4;
-                    int col = index % 4;
-                    return GestureDetector(
-                      onTap: () {
-                        _selecionarLocal(row, col); // Marca o local ao clicar
-                      },
-                      child: AnimatedContainer(
+              // Área de jogo: grid de células.
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                  child: GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: screenWidth * 0.02,
+                      mainAxisSpacing: screenWidth * 0.02,
+                      childAspectRatio: 1,
+                    ),
+                    itemCount: 16,
+                    itemBuilder: (context, index) {
+                      int row = index ~/ 4;
+                      int col = index % 4;
+                      return AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         decoration: BoxDecoration(
                           color: yellowMatrix[row][col]
-                              ? Colors.yellow // Manter o local amarelo
-                              : (matrix[row][col] ? Colors.green : Colors.black),
+                              ? Colors.yellow
+                              : (matrix[row][col]
+                                  ? Colors.green
+                                  : const Color.fromARGB(255, 39, 126, 136)),
                           shape: BoxShape.circle,
                           border: Border.all(
-                              color: const Color(0xFFF5B51C), width: 3),
+                            color: const Color(0xFFF5B51C),
+                            width: 3,
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
+              // Informações da bola sorteada.
               Padding(
-                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Column(
                   children: [
                     Text(
@@ -186,7 +254,7 @@ class _GameScreenState extends State<GameScreen> {
                         fontFamily: 'Aclonica',
                       ),
                     ),
-                    SizedBox(height: screenHeight * 0.02),
+                    SizedBox(height: 8.0),
                     Container(
                       width: screenWidth * 0.2,
                       height: screenWidth * 0.2,
@@ -197,7 +265,7 @@ class _GameScreenState extends State<GameScreen> {
                           BoxShadow(
                             color: Colors.black.withOpacity(0.5),
                             blurRadius: 10,
-                            offset: Offset(0, 5),
+                            offset: const Offset(0, 5),
                           ),
                         ],
                       ),
@@ -205,14 +273,17 @@ class _GameScreenState extends State<GameScreen> {
                   ],
                 ),
               ),
+              // Botão para sortear bola.
               Padding(
-                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+                padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton(
                   onPressed: balls.isEmpty ? null : _sortearBola,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF3088BE),
+                    backgroundColor: const Color(0xFF3088BE),
                     padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.1, vertical: screenHeight * 0.02),
+                      horizontal: screenWidth * 0.1,
+                      vertical: 16.0,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -227,68 +298,10 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               ),
-              CustomPaint(
-                size: Size(screenWidth, screenHeight),
-                painter: LinePainter(path),
-              ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Widget _buildNavigationButton(
-    BuildContext context, {
-    required IconData icon,
-    required VoidCallback onPressed,
-    required int index,
-  }) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        shape: const CircleBorder(),
-        backgroundColor: selectedButtonIndex == index ? Colors.orange : const Color(0xFF3088BE),
-        padding: EdgeInsets.all(screenWidth * 0.05),
-        shadowColor: Colors.transparent,
-        side: const BorderSide(
-          color: Color(0xFFF5B51C),
-          width: 3,
-        ),
-      ),
-      child: Icon(
-        icon,
-        size: screenWidth * 0.07,
-        color: const Color(0xFFF5B51C),
-      ),
-    );
-  }
-}
-
-class LinePainter extends CustomPainter {
-  final List<Offset> path;
-
-  LinePainter(this.path);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..strokeWidth = 5
-      ..style = PaintingStyle.stroke
-      ..color = Colors.yellow;
-
-    for (int i = 0; i < path.length - 1; i++) {
-      Offset start = Offset(path[i].dy * size.width / 4 + size.width / 8,
-          size.height - (path[i].dx * size.height / 4 + size.height / 8));
-      Offset end = Offset(path[i + 1].dy * size.width / 4 + size.width / 8,
-          size.height - (path[i + 1].dx * size.height / 4 + size.height / 8));
-      canvas.drawLine(start, end, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true; // Repaint sempre que o caminho mudar
   }
 }

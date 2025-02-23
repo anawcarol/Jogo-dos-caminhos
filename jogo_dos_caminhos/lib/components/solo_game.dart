@@ -8,6 +8,7 @@ class LocationSelectionScreen extends StatefulWidget {
 }
 
 class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
+  // Guarda qual célula foi selecionada (única seleção).
   List<bool> selectedLocations = List.generate(16, (index) => false);
   final List<int> restrictedIndices = [3, 12];
 
@@ -29,7 +30,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Botões superiores de navegação.
+              // Botões de navegação superiores.
               Padding(
                 padding: EdgeInsets.symmetric(
                   vertical: screenHeight * 0.06,
@@ -66,7 +67,12 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                                 ),
                               );
                             }
-                          : () {},
+                          : () {
+                              // Se nenhum local for selecionado, mostra um feedback.
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Selecione um local antes de prosseguir!")),
+                              );
+                            },
                     ),
                   ],
                 ),
@@ -100,6 +106,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                             ? null
                             : () {
                                 setState(() {
+                                  // Seleciona apenas o índice tocado.
                                   for (int i = 0; i < selectedLocations.length; i++) {
                                     selectedLocations[i] = i == index;
                                   }
@@ -109,7 +116,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                           duration: const Duration(milliseconds: 300),
                           decoration: BoxDecoration(
                             color: selectedLocations[index]
-                                ? Colors.green
+                                ? Colors.yellow // Seleção fica em amarelo.
                                 : (isRestricted
                                     ? Colors.grey
                                     : const Color.fromARGB(255, 39, 126, 136)),
@@ -125,7 +132,6 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                   ),
                 ),
               ),
-
               Padding(
                 padding: EdgeInsets.only(top: screenHeight * 0.02),
                 child: Text(
@@ -137,8 +143,8 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                   ),
                 ),
               ),
-             SizedBox(height: screenHeight * 0.02),
-              // Ícones no final da página.
+              SizedBox(height: screenHeight * 0.02),
+              // Ícones na parte inferior da tela.
               Padding(
                 padding: EdgeInsets.only(bottom: screenHeight * 0.02),
                 child: Row(
