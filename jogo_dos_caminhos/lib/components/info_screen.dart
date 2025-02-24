@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jogo_dos_caminhos/components/home_screen.dart';
+import 'package:flutter/gestures.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GameInfoScreen extends StatelessWidget {
   @override
@@ -78,17 +80,18 @@ class GameInfoScreen extends StatelessWidget {
                     ),
                     SizedBox(height: screenHeight * 0.02),
                     // Lista de informações.
-                    _buildInfoItem('Professor orientador'),
+                    _buildInfoItem('Professor orientador: Rogério César dos Santos'),
                     _buildInfoItem(
                         'Onde acessar a tese que explique matematicamente a primícia do jogo'),
-                    _buildInfoItem('Desenvolvedores do projeto'),
-                    _buildInfoItem('Acesso ao repositório do GitHub'),
+                    _buildInfoItem('Desenvolvedores do projeto: Ana Carolina Fialho, Douglas Marinho'),
+                    _buildInfoItem('Acesso ao repositório do GitHub: ', link: 'https://github.com/anawcarol/Jogo-dos-caminhos'),
+
                   ],
                 ),
               ),
 
               // Espaçamento maior antes do botão inferior
-              SizedBox(height: screenHeight * 0.1),
+              SizedBox(height: screenHeight * 0.05),
 
               // Botão inferior (Voltar) com maior tamanho.
               _buildCircularButton(
@@ -131,28 +134,54 @@ class GameInfoScreen extends StatelessWidget {
   }
 
   // Constrói um item de informação.
-  Widget _buildInfoItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          const Icon(
+  Widget _buildInfoItem(String text, {String? link}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start, // Alinha o ícone ao topo do texto
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 5), // Ajusta melhor a posição da bolinha
+          child: Icon(
             Icons.circle,
             size: 10,
             color: Color(0xFFF5B51C), // Ícone dourado para bullets.
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
+        ),
+        const SizedBox(width: 2),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
               ),
+              children: [
+                TextSpan(text: text),
+                if (link != null)
+                  TextSpan(
+                    text: link,
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        final Uri url = Uri.parse(link);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        } else {
+                          throw 'Não foi possível abrir o link: $link';
+                        }
+                      },
+                  ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 }

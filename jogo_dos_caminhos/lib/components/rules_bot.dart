@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'choose_screen.dart'; // Tela para voltar
+import 'solo_game.dart'; // Tela para avançar
 
 class HowToPlayScreen extends StatefulWidget {
   @override
@@ -74,10 +75,17 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                     onPressed: () {
                       if (_currentTextIndex < _instructions.length - 1) {
                         setState(() {
-                          _currentTextIndex++; // Avançar para o próximo texto
+                          _currentTextIndex++; // Avança para o próximo texto
                         });
                       } else {
                         // Navegar para a próxima tela
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                LocationSelectionScreen(), 
+                          ),
+                        );
                       }
                     },
                   ),
@@ -174,7 +182,8 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
     );
   }
 
-  Widget _buildNavigationButton({required IconData icon, required VoidCallback onPressed}) {
+  Widget _buildNavigationButton(
+      {required IconData icon, required VoidCallback onPressed}) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
