@@ -34,6 +34,7 @@ flutter:
   assets:
     - assets/imagens/image_vs.png
     - assets/imagens/trofeu.png
+    - assets/imagens/image.png
      
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -50,6 +51,11 @@ flutter:
     - family: Aclonica
       fonts:
         - asset: fonts/Aclonica-Regular.ttf
-  #
+
+    - family: Philosopher
+      fonts:
+        - asset: fonts/Philosopher-Regular.ttf
+        
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

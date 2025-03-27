@@ -11,9 +11,17 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
   int _currentTextIndex = 0; // Controla o índice do texto (0 ou 1)
 
   // Lista de textos para exibir no container
-  final List<String> _instructions = [
-    '• O caminho partirá da casa para a faculdade\nO jogador escolherá um local (exceto a casa e a faculdade)\n• O jogo possui 4 bolas verdes e 4 bolas vermelhas. A cada rodada será sorteado, uma única vez, uma bola diferente, sendo:\n• Bola verde: Seguirá o caminho para cima\n• Bola vermelha: Seguirá o caminho para a direita',
-    '• O jogo termina quando chega-se na faculdade\n• Se o caminho passar pelo local escolhido vence-se o jogo!'
+  final List<List<String>> _instructions = [
+    [
+      '• O jogador escolherá um local (exceto os pontos cinzas)',
+      '• O jogo possui 4 bolas verdes e 4 bolas vermelhas. A cada rodada será sorteado, uma única vez, uma bola diferente, sendo:',
+      '• Bola verde: Seguirá o caminho para cima',
+    ],
+    [
+      '• Bola vermelha: Seguirá o caminho para a direita',
+      '• O jogo termina quando chega-se no outro ponto cinza',
+      '• Se o caminho passar pelo local escolhido vence-se o jogo!',
+    ]
   ];
 
   @override
@@ -82,8 +90,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                LocationSelectionScreen(), 
+                            builder: (context) => LocationSelectionScreen(),
                           ),
                         );
                       }
@@ -115,7 +122,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                   horizontal: screenWidth * 0.05,
                 ),
                 child: Container(
-                  padding: EdgeInsets.all(screenWidth * 0.05),
+                  padding: EdgeInsets.all(screenWidth * 0.08),
                   decoration: BoxDecoration(
                     color: Color(0xFF257F98),
                     borderRadius: BorderRadius.circular(20),
@@ -124,16 +131,23 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                       width: 3,
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      _instructions[_currentTextIndex],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.04,
-                        color: Colors.white,
-                        fontFamily: 'Roboto',
-                      ),
-                    ),
+                  child: ListView.builder(
+                    itemCount: _instructions[_currentTextIndex].length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          _instructions[_currentTextIndex][index],
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.06,
+                            color: Colors.white,
+                            fontFamily: 'Philosopher',
+                            height: 1.7,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'win_game.dart';
+import 'kill_game.dart';
 
 class GameScreen extends StatefulWidget {
   final List<bool> selectedLocations;
@@ -89,31 +91,25 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _checkVictory() {
-    int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
-    if (selectedIndex != -1) {
-      int row = selectedIndex ~/ 4;
-      int col = selectedIndex % 4;
-      // Verifica se algum ponto do caminho corresponde à célula selecionada.
-      bool win = path.any((offset) => offset.dx.toInt() == row && offset.dy.toInt() == col);
-      victory = win;
-      // Exibe um diálogo com o resultado.
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(win ? "Vitória!" : "Derrota!"),
-          content: Text(win
-              ? "O caminho passou pela bola selecionada."
-              : "O caminho não passou pela bola selecionada."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("OK"),
-            ),
-          ],
-        ),
-      );
-    }
+  int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
+  if (selectedIndex != -1) {
+    int row = selectedIndex ~/ 4;
+    int col = selectedIndex % 4;
+
+    // Verifica se algum ponto do caminho corresponde à célula selecionada.
+    bool win = path.any((offset) => offset.dx.toInt() == row && offset.dy.toInt() == col);
+    victory = win;
+
+    // Redireciona para a tela correspondente
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => win ? WinScreen() : KillScreen(),
+      ),
+    );
   }
+}
+
 
   Widget _buildNavigationButton(
     BuildContext context, {

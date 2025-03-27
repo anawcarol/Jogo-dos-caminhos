@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'info_screen.dart';
 
-class WinBotScreen extends StatelessWidget {
+class KillScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -40,32 +40,32 @@ class WinBotScreen extends StatelessWidget {
             ),
 
             // Reduzi o espaço antes do título "Vitória!!!"
-            SizedBox(height: screenHeight * 0.05),
+            SizedBox(height: screenHeight * 0.08),
 
             // Texto "Vitória!!!"
             Text(
-              'Vitória!!!',
+              'Tente novamente!',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: screenWidth * 0.12, // 12% da largura da tela
+                fontSize: screenWidth * 0.08, // 12% da largura da tela
                 fontFamily: 'Aclonica',
                 color: Color(0xFFF5B51C),
               ),
             ),
 
             // Reduzi ainda mais o espaço antes da imagem
-            SizedBox(height: screenHeight * 0.02),
+            SizedBox(height: screenHeight * 0.10),
 
             // Imagem do troféu aumentada e melhor posicionada
             Image.asset(
-              'assets/imagens/trofeu.png',
-              width: screenWidth * 0.8,  // Aumentei a largura
-              height: screenHeight * 0.5, // Aumentei a altura
+              'assets/imagens/image.png',
+              width: screenWidth * 0.60,  // Aumentei a largura
+              height: screenHeight * 0.30, // Aumentei a altura
               fit: BoxFit.contain,
             ),
 
             // Adicionei um espaço maior entre a imagem e o botão Home
-            SizedBox(height: screenHeight * 0.02),
+            SizedBox(height: screenHeight * 0.10),
 
             // Botão Home no centro e mais para baixo
             _buildCircularButton(
