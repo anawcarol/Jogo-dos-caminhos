@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TwoGameScreen(),  // Chamando a HomeScreen do arquivo home_screen.dart dentro de components
+      home: HomeScreen(),  // Chamando a HomeScreen do arquivo home_screen.dart dentro de components
     );
   }
 }

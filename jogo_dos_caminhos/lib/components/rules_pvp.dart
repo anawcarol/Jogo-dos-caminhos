@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'choose_screen.dart'; // Tela para voltar
-import 'game_screen_dois.dart'; // Tela do jogo
+import 'choose_screen.dart'; // Tela para voltar // Tela do jogo
 import 'two_game.dart';
 
 class HowToPlayPvPScreen extends StatefulWidget {

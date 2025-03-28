@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'win_game.dart';
 import 'kill_game.dart';
+import 'info_screen.dart';
 
 class GameScreenDois extends StatefulWidget {
   final List<bool> selectedLocationsPlayer1;
@@ -73,7 +74,8 @@ class _GameScreenDoisState extends State<GameScreenDois> {
     if (p1Index != -1) {
       int row = p1Index ~/ 4, col = p1Index % 4;
       if (path.any((o) => o.dx.toInt() == row && o.dy.toInt() == col)) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => WinScreen()));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => WinScreen()));
         return;
       }
     }
@@ -82,37 +84,39 @@ class _GameScreenDoisState extends State<GameScreenDois> {
     if (p2Index != -1) {
       int row = p2Index ~/ 4, col = p2Index % 4;
       if (path.any((o) => o.dx.toInt() == row && o.dy.toInt() == col)) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => KillScreen()));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => KillScreen()));
       }
     }
   }
 
-  Widget _buildNavigationButton({required IconData icon, required VoidCallback onPressed}) {
-  final screenWidth = MediaQuery.of(context).size.width;
-  return ElevatedButton(
-    onPressed: onPressed,
-    style: ElevatedButton.styleFrom(
-      shape: CircleBorder(),
-      backgroundColor: Color(0xFF3088BE),
-      padding: EdgeInsets.all(screenWidth * 0.05),
-      shadowColor: Colors.transparent,
-      side: BorderSide(
-        color: Color(0xFFF5B51C),
-        width: 3,
+  Widget _buildNavigationButton(
+      {required IconData icon, required VoidCallback onPressed}) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: CircleBorder(),
+        backgroundColor: Color(0xFF3088BE),
+        padding: EdgeInsets.all(screenWidth * 0.05),
+        shadowColor: Colors.transparent,
+        side: BorderSide(
+          color: Color(0xFFF5B51C),
+          width: 3,
+        ),
       ),
-    ),
-    child: Icon(
-      icon,
-      size: screenWidth * 0.07,
-      color: Color(0xFFF5B51C),
-    ),
-  );
-}
+      child: Icon(
+        icon,
+        size: screenWidth * 0.07,
+        color: Color(0xFFF5B51C),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -132,9 +136,18 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildNavigationButton(icon: Icons.info, onPressed: () {}),
+                    _buildNavigationButton(
+                        icon: Icons.info,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GameInfoScreen()),
+                          );
+                        }),
                     SizedBox(width: screenWidth * 0.05),
-                    _buildNavigationButton(icon: Icons.volume_up, onPressed: () {}),
+                    _buildNavigationButton(
+                        icon: Icons.volume_up, onPressed: () {}),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
                       icon: Icons.arrow_back,
@@ -166,7 +179,8 @@ class _GameScreenDoisState extends State<GameScreenDois> {
               // Game Grid (identical structure)
               Flexible(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: 2.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05, vertical: 2.0),
                   child: GridView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -179,9 +193,11 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                     itemCount: 16,
                     itemBuilder: (context, index) {
                       int row = index ~/ 4, col = index % 4;
-                      bool isSelectedP1 = widget.selectedLocationsPlayer1[index];
-                      bool isSelectedP2 = widget.selectedLocationsPlayer2[index];
-                      
+                      bool isSelectedP1 =
+                          widget.selectedLocationsPlayer1[index];
+                      bool isSelectedP2 =
+                          widget.selectedLocationsPlayer2[index];
+
                       return AnimatedContainer(
                         duration: Duration(milliseconds: 300),
                         decoration: BoxDecoration(
@@ -193,7 +209,8 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                                       ? Colors.indigo[800]
                                       : Color.fromARGB(255, 39, 126, 136),
                           shape: BoxShape.circle,
-                          border: Border.all(color: Color(0xFFF5B51C), width: 3),
+                          border:
+                              Border.all(color: Color(0xFFF5B51C), width: 3),
                         ),
                       );
                     },
@@ -223,7 +240,6 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                       decoration: BoxDecoration(
                         color: ballColor,
                         shape: BoxShape.circle,
-                        
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.5),
@@ -245,7 +261,6 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        
                       ),
                       child: Text(
                         'Seguir',

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'choose_screen.dart'; // Tela para voltar
-import 'game_screen_dois.dart'; 
 import 'two_game.dart';  // Tela do jogo
 
 class HowToPlayPvPlusScreen extends StatefulWidget {
@@ -164,7 +163,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                   Flexible(
                     flex: 2,
                     child: Icon(
-                      Icons.person,
+                      Icons.person_2_outlined,
                       size: screenWidth * 0.10,
                       color: Color(0xFF163F58),
                     ),
@@ -183,7 +182,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                   Flexible(
                     flex: 2,
                     child: Icon(
-                      Icons.person,
+                      Icons.person_2_outlined,
                       size: screenWidth * 0.10,
                       color: Color(0xFF163F58),
                     ),

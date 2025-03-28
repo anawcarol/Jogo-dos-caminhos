@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'game_screen_dois.dart';
+import 'info_screen.dart';
 
 class TwoGameScreen extends StatefulWidget {
   @override
@@ -98,7 +99,11 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildNavigationButton(icon: Icons.info, onPressed: () {}),
+                    _buildNavigationButton(icon: Icons.info, onPressed: () {Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GameInfoScreen()),
+                          );}),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(icon: Icons.volume_up, onPressed: () {}),
                     SizedBox(width: screenWidth * 0.05),
