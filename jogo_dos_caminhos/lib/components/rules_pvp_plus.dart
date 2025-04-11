@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jogo_dos_caminhos/components/two_game_plus.dart';
 import 'choose_screen.dart'; // Tela para voltar
 import 'two_game.dart';  // Tela do jogo
 
@@ -13,15 +14,15 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
   // Lista de textos para exibir no container
   final List<List<String>> _instructions = [
     [
-      '• Cada jogador escolherá um local diferente (exceto os pontos cinzas)',
-      '• O jogo possui 4 bolas verdes e 4 bolas vermelhas. A cada rodada será sorteado, uma única vez, uma bola diferente, sendo:',
-      '• Bola verde: Seguirá o caminho para cima',
+      '• O jogo é disputado em 2 rodadas.',
+      '• 1ª rodada: Jogador 1 escolhe um destino (qualquer casa que não seja cinza). Jogador 2 traça o caminho até lá, movendo‑se casa a casa (adjacente).',
+      '• Cada passo é contado. Quando o caminho alcançar o destino, a rodada acaba e o total de movimentos do Jogador 2 é registrado.',
     ],
     [
-      '• Bola vermelha: Seguirá o caminho para a direita',
-      '• O jogo termina quando chega-se no outro ponto cinza',
-      '• Se o caminho passar por um dos locais escolhidos, o respectivo player ganha o jogo!',
-    ]
+      '• 2ª rodada: os papéis se invertem — Jogador 2 escolhe o destino e Jogador 1 traça o caminho.',
+      '• Ao traçar o caminho, o destino escolhido pelo adversário fica oculto até ser alcançado.',
+      '• Vence quem atingir o destino do oponente com MENOS movimentos. Empate se ambos precisarem do mesmo número de passos.',
+    ],
   ];
 
   @override
@@ -90,7 +91,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => TwoGameScreen(),
+                            builder: (context) => TwoGamePlusScreen(),
                           ),
                         );
                       }
