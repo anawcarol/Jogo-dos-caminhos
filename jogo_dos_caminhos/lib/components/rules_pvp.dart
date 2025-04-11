@@ -12,13 +12,13 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
 
   final List<List<String>> _instructions = [
     [
-      '• Cada jogador escolherá um local diferente (exceto os pontos cinzas)',
-      '• O jogo possui 4 bolas verdes e 4 bolas vermelhas. A cada rodada será sorteado, uma única vez, uma bola diferente, sendo:',
-      '• Bola verde: Seguirá o caminho para cima',
+      '• Cada jogador escolherá um local diferente (exceto os pontos cinzas).',
+      '• O jogo possui 3 bolas verdes e 3 bolas vermelhas. A cada rodada será sorteada, uma única vez, uma bola diferente, sendo:',
+      '• Bola verde: Seguirá o caminho para direita,',
     ],
     [
-      '• Bola vermelha: Seguirá o caminho para a direita',
-      '• O jogo termina quando chega-se no outro ponto cinza',
+      '• Bola vermelha: Seguirá o caminho para cima.',
+      '• O jogo termina quando chega-se no outro ponto cinza.',
       '• Se o caminho passar por um dos locais escolhidos, o respectivo player ganha o jogo!',
     ]
   ];

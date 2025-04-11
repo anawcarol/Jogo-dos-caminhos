@@ -13,13 +13,13 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
   // Lista de textos para exibir no container
   final List<List<String>> _instructions = [
     [
-      '• O jogador escolherá um local (exceto os pontos cinzas)',
-      '• O jogo possui 4 bolas verdes e 4 bolas vermelhas. A cada rodada será sorteado, uma única vez, uma bola diferente, sendo:',
-      '• Bola verde: Seguirá o caminho para cima',
+      '• O jogador escolherá um local (exceto os pontos cinzas).',
+      '• O jogo possui 3 bolas verdes e 3 bolas vermelhas. A cada rodada será sorteada, uma única vez, uma bola diferente, sendo:',
+      '• Bola verde: Seguirá o caminho para cima,',
     ],
     [
-      '• Bola vermelha: Seguirá o caminho para a direita',
-      '• O jogo termina quando chega-se no outro ponto cinza',
+      '• Bola vermelha: Seguirá o caminho para a direita.',
+      '• O jogo termina quando chega-se no outro ponto cinza.',
       '• Se o caminho passar pelo local escolhido vence-se o jogo!',
     ]
   ];
