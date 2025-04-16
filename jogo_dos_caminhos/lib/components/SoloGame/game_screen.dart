@@ -21,7 +21,7 @@ class _GameScreenState extends State<GameScreen> {
     Colors.red,
     Colors.red,
   ];
-  Color ballColor = Colors.green;
+  Color? ballColor; // Alterado para nullable
   List<String> sortedBalls = [];
   // Matriz que marca as células visitadas (movimento do caminho).
   List<List<bool>> matrix = List.generate(4, (_) => List.filled(4, false));
@@ -56,7 +56,7 @@ class _GameScreenState extends State<GameScreen> {
       String ballType = ballColor == Colors.green ? "Green" : "Red";
       sortedBalls.add(ballType);
 
-      _calcularCaminho(ballColor);
+      _calcularCaminho(ballColor!);
 
       // Quando não houver mais bolas, verifica vitória.
       if (balls.isEmpty) {
@@ -91,25 +91,24 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _checkVictory() {
-  int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
-  if (selectedIndex != -1) {
-    int row = selectedIndex ~/ 4;
-    int col = selectedIndex % 4;
+    int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
+    if (selectedIndex != -1) {
+      int row = selectedIndex ~/ 4;
+      int col = selectedIndex % 4;
 
-    // Verifica se algum ponto do caminho corresponde à célula selecionada.
-    bool win = path.any((offset) => offset.dx.toInt() == row && offset.dy.toInt() == col);
-    victory = win;
+      // Verifica se algum ponto do caminho corresponde à célula selecionada.
+      bool win = path.any((offset) => offset.dx.toInt() == row && offset.dy.toInt() == col);
+      victory = win;
 
-    // Redireciona para a tela correspondente
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => win ? WinScreen() : KillScreen(),
-      ),
-    );
+      // Redireciona para a tela correspondente
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => win ? WinScreen() : KillScreen(),
+        ),
+      );
+    }
   }
-}
-
 
   Widget _buildNavigationButton(
     BuildContext context, {
@@ -118,7 +117,6 @@ class _GameScreenState extends State<GameScreen> {
     required int index,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
-    // Agora, todos os botões terão o mesmo background, seguindo o padrão da Location.
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -193,19 +191,31 @@ class _GameScreenState extends State<GameScreen> {
               // Título.
               Padding(
                 padding: const EdgeInsets.only(top: 100.0),
-                child: Text(
-                  'Jogo em andamento',
-                  style: TextStyle(
-                    color: const Color(0xFFF5B51C),
-                    fontSize: screenWidth * 0.08,
-                    fontFamily: 'Aclonica',
-                  ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Jogo em andamento',
+                      style: TextStyle(
+                        color: const Color(0xFFF5B51C),
+                        fontSize: screenWidth * 0.08,
+                        fontFamily: 'Aclonica',
+                      ),
+                    ),
+                    SizedBox(height: 25.0), // Increased space below the title
+                  ],
                 ),
               ),
+
+              SizedBox(height: 5.0),
               // Área de jogo: grid de células.
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                  padding: EdgeInsets.fromLTRB(
+                    screenWidth * 0.05, // Left padding
+                    0,                  // Top padding
+                    screenWidth * 0.05, // Right padding
+                    8.0,                // Reduced bottom padding
+                  ),
                   child: GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -242,36 +252,38 @@ class _GameScreenState extends State<GameScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Column(
                   children: [
-                    Text(
-                      'Bola Sorteada:',
-                      style: TextStyle(
-                        color: const Color(0xFFF5B51C),
-                        fontSize: screenWidth * 0.07,
-                        fontFamily: 'Aclonica',
+                    Center(
+                      child: Text(
+                        ballColor != null ? 'Bola Sorteada:' : 'Clique em Seguir para começar',
+                        style: TextStyle(
+                          color: const Color(0xFFF5B51C),
+                          fontSize: screenWidth * 0.05,
+                          fontFamily: 'Aclonica',
+                        ),
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    SizedBox(height: 3.0),
                     Container(
                       width: screenWidth * 0.8,
                       height: screenWidth * 0.2,
                       decoration: BoxDecoration(
-                        color: ballColor,
+                        color: ballColor ?? Colors.transparent,
                         shape: BoxShape.circle,
-                        boxShadow: [
+                        boxShadow: ballColor != null ? [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.5),
                             blurRadius: 10,
                             offset: const Offset(5, 5),
                           ),
-                        ],
+                        ] : [],
                       ),
                     ),
                   ],
                 ),
               ),
               // Botão para sortear bola.
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+             Padding(
+                padding: const EdgeInsets.only(bottom: 16.0, top: 20.0), // Increased top padding
                 child: ElevatedButton(
                   onPressed: balls.isEmpty ? null : _sortearBola,
                   style: ElevatedButton.styleFrom(

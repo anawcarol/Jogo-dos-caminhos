@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'info_screen.dart';
+import '../home_screen.dart';
+import '../info_screen.dart';
+import 'solo_game.dart'; // Certifique-se de importar a tela de seleção de localização
 
-class KillScreen extends StatelessWidget {
+class WinScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -15,7 +16,7 @@ class KillScreen extends StatelessWidget {
           children: [
             // Linha para os botões de Info e Volume no topo
             Padding(
-              padding: EdgeInsets.all(screenWidth * 0.04), // 4% da largura da tela
+              padding: EdgeInsets.all(screenWidth * 0.04),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -28,7 +29,7 @@ class KillScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  SizedBox(width: screenWidth * 0.05), // Espaço entre os botões
+                  SizedBox(width: screenWidth * 0.05),
                   _buildCircularButton(
                     icon: Icons.volume_up_outlined,
                     onPressed: () {
@@ -39,65 +40,75 @@ class KillScreen extends StatelessWidget {
               ),
             ),
 
-            // Reduzi o espaço antes do título "Vitória!!!"
-            SizedBox(height: screenHeight * 0.08),
+            SizedBox(height: screenHeight * 0.05),
 
-            // Texto "Vitória!!!"
             Text(
-              'Tente novamente!',
+              'Vitória!!!',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: screenWidth * 0.08, // 12% da largura da tela
+                fontSize: screenWidth * 0.12,
                 fontFamily: 'Aclonica',
                 color: Color(0xFFF5B51C),
               ),
             ),
 
-            // Reduzi ainda mais o espaço antes da imagem
-            SizedBox(height: screenHeight * 0.10),
+            SizedBox(height: screenHeight * 0.02),
 
-            // Imagem do troféu aumentada e melhor posicionada
             Image.asset(
-              'assets/imagens/image.png',
-              width: screenWidth * 0.60,  // Aumentei a largura
-              height: screenHeight * 0.30, // Aumentei a altura
+              'assets/imagens/trofeu.png',
+              width: screenWidth * 0.8,
+              height: screenHeight * 0.5,
               fit: BoxFit.contain,
             ),
 
-            // Adicionei um espaço maior entre a imagem e o botão Home
-            SizedBox(height: screenHeight * 0.10),
+            SizedBox(height: screenHeight * 0.02),
 
-            // Botão Home no centro e mais para baixo
-            _buildCircularButton(
-              icon: Icons.home,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                );
-              },
-              isLarger: true, // Define um tamanho maior para o botão Home
+            // Linha para os botões Home e Location centralizados
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildCircularButton(
+                  icon: Icons.home,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
+                  },
+                  isLarger: true,
+                ),
+                SizedBox(width: screenWidth * 0.05), // Espaço entre os botões
+                _buildCircularButton(
+                  icon: Icons.refresh, // Ícone de seta circular
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LocationSelectionScreen()),
+                    );
+                  },
+                  isLarger: true,
+                ),
+              ],
             ),
 
-            Spacer(), // Garante que o layout fique equilibrado
+            Spacer(),
           ],
         ),
       ),
     );
   }
 
-  // Método para criar botões circulares reutilizáveis
   Widget _buildCircularButton({
     required IconData icon,
     required VoidCallback onPressed,
-    bool isLarger = false, // Controle de tamanho para o botão Home
+    bool isLarger = false,
   }) {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         shape: CircleBorder(),
         backgroundColor: Color(0xFF3088BE),
-        padding: EdgeInsets.all(isLarger ? 40 : 20), // Botão Home maior
+        padding: EdgeInsets.all(isLarger ? 30 : 15), // Reduzido
         side: BorderSide(
           color: Color(0xFFF5B51C),
           width: 3,
@@ -105,7 +116,7 @@ class KillScreen extends StatelessWidget {
       ),
       child: Icon(
         icon,
-        size: isLarger ? 60 : 35, // Ícone maior para o botão Home
+        size: isLarger ? 50 : 30, // Reduzido
         color: Color(0xFFF5B51C),
       ),
     );

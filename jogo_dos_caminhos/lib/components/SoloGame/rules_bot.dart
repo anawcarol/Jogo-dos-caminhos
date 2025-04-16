@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
-import 'choose_screen.dart'; // Tela para voltar // Tela do jogo
-import 'two_game.dart';
+import '../choose_screen.dart'; // Tela para voltar
+import 'solo_game.dart'; // Tela para avançar
 
-class HowToPlayPvPScreen extends StatefulWidget {
+class HowToPlayScreen extends StatefulWidget {
   @override
-  _HowToPlayPvPScreenState createState() => _HowToPlayPvPScreenState();
+  _HowToPlayScreenState createState() => _HowToPlayScreenState();
 }
 
-class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
-  int _currentTextIndex = 0; // Controla o índice do texto
+class _HowToPlayScreenState extends State<HowToPlayScreen> {
+  int _currentTextIndex = 0; // Controla o índice do texto (0 ou 1)
 
+  // Lista de textos para exibir no container
   final List<List<String>> _instructions = [
     [
-      '• Cada jogador escolherá um local diferente (exceto os pontos cinzas).',
+      '• O jogador escolherá um local (exceto os pontos cinzas).',
       '• O jogo possui 3 bolas verdes e 3 bolas vermelhas. A cada rodada será sorteada, uma única vez, uma bola diferente, sendo:',
-      '• Bola verde: Seguirá o caminho para direita,',
+      '• Bola verde: Seguirá o caminho para cima,',
     ],
     [
-      '• Bola vermelha: Seguirá o caminho para cima.',
+      '• Bola vermelha: Seguirá o caminho para a direita.',
       '• O jogo termina quando chega-se no outro ponto cinza.',
-      '• Se o caminho passar por um dos locais escolhidos, o respectivo player ganha o jogo!',
+      '• Se o caminho passar pelo local escolhido vence-se o jogo!',
     ]
   ];
 
@@ -43,6 +44,7 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Botões de navegação superior
             Padding(
               padding: EdgeInsets.symmetric(
                 vertical: screenHeight * 0.03,
@@ -55,11 +57,15 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
                     icon: Icons.arrow_back_outlined,
                     onPressed: () {
                       if (_currentTextIndex > 0) {
-                        setState(() => _currentTextIndex--);
+                        setState(() {
+                          _currentTextIndex--; // Voltar para o texto anterior
+                        });
                       } else {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => GameModeScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => GameModeScreen(),
+                          ),
                         );
                       }
                     },
@@ -76,11 +82,16 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
                     icon: Icons.arrow_forward_outlined,
                     onPressed: () {
                       if (_currentTextIndex < _instructions.length - 1) {
-                        setState(() => _currentTextIndex++);
+                        setState(() {
+                          _currentTextIndex++; // Avança para o próximo texto
+                        });
                       } else {
+                        // Navegar para a próxima tela
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => TwoGameScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => LocationSelectionScreen(),
+                          ),
                         );
                       }
                     },
@@ -89,6 +100,7 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
               ),
             ),
 
+            // Título "Como jogar!"
             Padding(
               padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
               child: Text(
@@ -102,6 +114,7 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
               ),
             ),
 
+            // Container com altura fixa e texto dinâmico centralizado
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -113,7 +126,10 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
                   decoration: BoxDecoration(
                     color: Color(0xFF257F98),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Color(0xFFF5B51C), width: 3),
+                    border: Border.all(
+                      color: Color(0xFFF5B51C),
+                      width: 3,
+                    ),
                   ),
                   child: ListView.builder(
                     itemCount: _instructions[_currentTextIndex].length,
@@ -137,6 +153,7 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
               ),
             ),
 
+            // Ícones "Jogador vs Máquina"
             Padding(
               padding: EdgeInsets.only(bottom: screenHeight * 0.02),
               child: Row(
@@ -145,7 +162,11 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
                 children: [
                   Flexible(
                     flex: 2,
-                    child: Icon(Icons.person, size: screenWidth * 0.10, color: Color(0xFF163F58)),
+                    child: Icon(
+                      Icons.person,
+                      size: screenWidth * 0.10,
+                      color: Color(0xFF163F58),
+                    ),
                   ),
                   SizedBox(width: screenWidth * 0.03),
                   Flexible(
@@ -160,7 +181,11 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
                   SizedBox(width: screenWidth * 0.03),
                   Flexible(
                     flex: 2,
-                    child: Icon(Icons.person, size: screenWidth * 0.10, color: Color(0xFF163F58)),
+                    child: Icon(
+                      Icons.smart_toy,
+                      size: screenWidth * 0.10,
+                      color: Color(0xFF163F58),
+                    ),
                   ),
                 ],
               ),
@@ -171,7 +196,8 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
     );
   }
 
-  Widget _buildNavigationButton({required IconData icon, required VoidCallback onPressed}) {
+  Widget _buildNavigationButton(
+      {required IconData icon, required VoidCallback onPressed}) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -179,9 +205,16 @@ class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
         backgroundColor: Color(0xFF3088BE),
         padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
         shadowColor: Colors.transparent,
-        side: BorderSide(color: Color(0xFFF5B51C), width: 3),
+        side: BorderSide(
+          color: Color(0xFFF5B51C),
+          width: 3,
+        ),
       ),
-      child: Icon(icon, size: MediaQuery.of(context).size.width * 0.07, color: Color(0xFFF5B51C)),
+      child: Icon(
+        icon,
+        size: MediaQuery.of(context).size.width * 0.07,
+        color: Color(0xFFF5B51C),
+      ),
     );
   }
 }

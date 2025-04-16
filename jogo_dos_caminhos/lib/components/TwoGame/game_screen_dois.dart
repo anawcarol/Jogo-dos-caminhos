@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'win_game.dart';
-import 'kill_game.dart';
-import 'info_screen.dart';
+import 'win_screen.dart';
+import 'kill_screen.dart';
+import '../info_screen.dart';
 
 class GameScreenDois extends StatefulWidget {
   final List<bool> selectedLocationsPlayer1;
   final List<bool> selectedLocationsPlayer2;
+  final Function(bool, bool) onGameFinished;
 
   const GameScreenDois({
     Key? key,
     required this.selectedLocationsPlayer1,
     required this.selectedLocationsPlayer2,
+    required this.onGameFinished,
   }) : super(key: key);
 
   @override
@@ -27,27 +29,40 @@ class _GameScreenDoisState extends State<GameScreenDois> {
     Colors.red,
     Colors.red,
   ];
-  Color ballColor = Colors.green;
-  List<String> sortedBalls = [];
+  Color? ballColor; // Alterado para nullable
   List<List<bool>> matrix = List.generate(4, (_) => List.filled(4, false));
   List<Offset> path = [];
   int currentX = 3;
   int currentY = 0;
+  bool gameFinished = false;
 
   @override
   void initState() {
     super.initState();
+    _resetGame();
+  }
+
+  void _resetGame() {
+    path.clear();
+    matrix = List.generate(4, (_) => List.filled(4, false));
+    currentX = 3;
+    currentY = 0;
     path.add(Offset(currentX.toDouble(), currentY.toDouble()));
     matrix[currentX][currentY] = true;
+    gameFinished = false;
   }
 
   void _sortearBola() {
-    if (balls.isEmpty) return;
+    if (balls.isEmpty || gameFinished) return;
 
     setState(() {
       ballColor = balls.removeAt(Random().nextInt(balls.length));
-      _calcularCaminho(ballColor);
-      if (balls.isEmpty) _checkVictory();
+      _calcularCaminho(ballColor!);
+      
+      // Verifica se o jogo terminou
+      if (balls.isEmpty || (currentX == 0 && currentY == 3)) {
+        _finalizarJogo();
+      }
     });
   }
 
@@ -62,45 +77,69 @@ class _GameScreenDoisState extends State<GameScreenDois> {
     }
 
     if (nextX != currentX || nextY != currentY) {
-      currentX = nextX;
-      currentY = nextY;
-      matrix[currentX][currentY] = true;
-      path.add(Offset(currentX.toDouble(), currentY.toDouble()));
+      setState(() {
+        currentX = nextX;
+        currentY = nextY;
+        matrix[currentX][currentY] = true;
+        path.add(Offset(currentX.toDouble(), currentY.toDouble()));
+        
+        if (currentX == 0 && currentY == 3) {
+          _finalizarJogo();
+        }
+      });
     }
   }
 
-  void _checkVictory() {
-    int p1Index = widget.selectedLocationsPlayer1.indexWhere((e) => e);
-    if (p1Index != -1) {
-      int row = p1Index ~/ 4, col = p1Index % 4;
-      if (path.any((o) => o.dx.toInt() == row && o.dy.toInt() == col)) {
+  void _finalizarJogo() {
+    if (gameFinished) return;
+    
+    gameFinished = true;
+    
+    bool player1Wins = _checkPlayerWin(widget.selectedLocationsPlayer1);
+    bool player2Wins = _checkPlayerWin(widget.selectedLocationsPlayer2);
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (player1Wins || player2Wins) {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => WinScreen()));
-        return;
-      }
-    }
-
-    int p2Index = widget.selectedLocationsPlayer2.indexWhere((e) => e);
-    if (p2Index != -1) {
-      int row = p2Index ~/ 4, col = p2Index % 4;
-      if (path.any((o) => o.dx.toInt() == row && o.dy.toInt() == col)) {
+          context,
+          MaterialPageRoute(
+            builder: (_) => WinScreen(
+              player1Won: player1Wins,
+              player2Won: player2Wins,
+            ),
+          ),
+        );
+      } else {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => KillScreen()));
+          context,
+          MaterialPageRoute(builder: (_) => KillScreen()),
+        );
       }
-    }
+    });
   }
 
-  Widget _buildNavigationButton(
-      {required IconData icon, required VoidCallback onPressed}) {
+  bool _checkPlayerWin(List<bool> playerLocations) {
+    int index = playerLocations.indexWhere((e) => e);
+    if (index != -1) {
+      int row = index ~/ 4, col = index % 4;
+      return path.any((o) => o.dx.toInt() == row && o.dy.toInt() == col);
+    }
+    return false;
+  }
+
+  Widget _buildNavigationButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
     final screenWidth = MediaQuery.of(context).size.width;
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        shape: CircleBorder(),
-        backgroundColor: Color(0xFF3088BE),
+        shape: const CircleBorder(),
+        backgroundColor: const Color(0xFF3088BE),
         padding: EdgeInsets.all(screenWidth * 0.05),
         shadowColor: Colors.transparent,
-        side: BorderSide(
+        side: const BorderSide(
           color: Color(0xFFF5B51C),
           width: 3,
         ),
@@ -108,7 +147,7 @@ class _GameScreenDoisState extends State<GameScreenDois> {
       child: Icon(
         icon,
         size: screenWidth * 0.07,
-        color: Color(0xFFF5B51C),
+        color: const Color(0xFFF5B51C),
       ),
     );
   }
@@ -119,7 +158,7 @@ class _GameScreenDoisState extends State<GameScreenDois> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF163F58), Color(0xFF3088BE)],
             stops: [0.3, 1.0],
@@ -130,24 +169,26 @@ class _GameScreenDoisState extends State<GameScreenDois> {
         child: SafeArea(
           child: Column(
             children: [
-              // Header (identical to TwoGameScreen)
+              // Header
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildNavigationButton(
-                        icon: Icons.info,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => GameInfoScreen()),
-                          );
-                        }),
+                      icon: Icons.info,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => GameInfoScreen()),
+                        );
+                      },
+                    ),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
-                        icon: Icons.volume_up, onPressed: () {}),
+                      icon: Icons.volume_up,
+                      onPressed: () {},
+                    ),
                     SizedBox(width: screenWidth * 0.05),
                     _buildNavigationButton(
                       icon: Icons.arrow_back,
@@ -157,16 +198,16 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                 ),
               ),
 
-              SizedBox(height: 30.0),
+              const SizedBox(height: 30.0),
 
               // Title
               Padding(
-                padding: EdgeInsets.only(top: 20.0),
+                padding: const EdgeInsets.only(top: 20.0),
                 child: Center(
                   child: Text(
                     'Jogo em andamento',
                     style: TextStyle(
-                      color: Color(0xFFF5B51C),
+                      color: const Color(0xFFF5B51C),
                       fontSize: screenWidth * 0.07,
                       fontFamily: 'Aclonica',
                     ),
@@ -174,15 +215,17 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                 ),
               ),
 
-              SizedBox(height: 30.0),
+              const SizedBox(height: 30.0),
 
-              // Game Grid (identical structure)
+              // Game Grid
               Flexible(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.05, vertical: 2.0),
+                    horizontal: screenWidth * 0.05,
+                    vertical: 2.0,
+                  ),
                   child: GridView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4,
@@ -193,24 +236,24 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                     itemCount: 16,
                     itemBuilder: (context, index) {
                       int row = index ~/ 4, col = index % 4;
-                      bool isSelectedP1 =
-                          widget.selectedLocationsPlayer1[index];
-                      bool isSelectedP2 =
-                          widget.selectedLocationsPlayer2[index];
+                      bool isSelectedP1 = widget.selectedLocationsPlayer1[index];
+                      bool isSelectedP2 = widget.selectedLocationsPlayer2[index];
 
                       return AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 300),
                         decoration: BoxDecoration(
                           color: isSelectedP1
-                              ? Color(0xFFF5B51C)
+                              ? const Color(0xFFF5B51C)
                               : isSelectedP2
-                                  ? Color.fromARGB(255, 7, 62, 77)
+                                  ? const Color.fromARGB(255, 7, 62, 77)
                                   : matrix[row][col]
                                       ? Colors.indigo[800]
-                                      : Color.fromARGB(255, 39, 126, 136),
+                                      : const Color.fromARGB(255, 39, 126, 136),
                           shape: BoxShape.circle,
-                          border:
-                              Border.all(color: Color(0xFFF5B51C), width: 3),
+                          border: Border.all(
+                            color: const Color(0xFFF5B51C),
+                            width: 3,
+                          ),
                         ),
                       );
                     },
@@ -218,42 +261,44 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                 ),
               ),
 
-              SizedBox(height: 30.0),
+              const SizedBox(height: 30.0),
 
               // Controls
               Padding(
-                padding: EdgeInsets.only(bottom: 16.0),
+                padding: const EdgeInsets.only(bottom: 16.0),
                 child: Column(
                   children: [
-                    Text(
-                      'Bola Sorteada:',
-                      style: TextStyle(
-                        color: Color(0xFFF5B51C),
-                        fontSize: screenWidth * 0.06,
-                        fontFamily: 'Aclonica',
+                    Center(
+                      child: Text(
+                        ballColor != null ? 'Bola Sorteada:' : 'Clique em Seguir para começar',
+                        style: TextStyle(
+                          color: const Color(0xFFF5B51C),
+                          fontSize: screenWidth * 0.05,
+                          fontFamily: 'Aclonica',
+                        ),
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Container(
                       width: screenWidth * 0.2,
                       height: screenWidth * 0.2,
                       decoration: BoxDecoration(
-                        color: ballColor,
+                        color: ballColor ?? Colors.transparent,
                         shape: BoxShape.circle,
-                        boxShadow: [
+                        boxShadow: ballColor != null ? [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.5),
                             blurRadius: 10,
-                            offset: Offset(5, 5),
+                            offset: const Offset(5, 5),
                           ),
-                        ],
+                        ] : [],
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     ElevatedButton(
-                      onPressed: balls.isEmpty ? null : _sortearBola,
+                      onPressed: gameFinished ? null : _sortearBola,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF3088BE),
+                        backgroundColor: const Color(0xFF3088BE),
                         padding: EdgeInsets.symmetric(
                           horizontal: screenWidth * 0.1,
                           vertical: 16.0,
@@ -263,7 +308,7 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                         ),
                       ),
                       child: Text(
-                        'Seguir',
+                        gameFinished ? 'Jogo Finalizado' : 'Seguir',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: screenWidth * 0.06,

@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
-import 'choose_screen.dart'; // Tela para voltar
-import 'two_game.dart';  // Tela do jogo
+import '../choose_screen.dart'; // Tela para voltar // Tela do jogo
+import 'two_game.dart';
 
-class HowToPlayPvPlusScreen extends StatefulWidget {
+class HowToPlayPvPScreen extends StatefulWidget {
   @override
-  _HowToPlayPvPlusScreenState createState() => _HowToPlayPvPlusScreenState();
+  _HowToPlayPvPScreenState createState() => _HowToPlayPvPScreenState();
 }
 
-class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
-  int _currentTextIndex = 0; // Controla o índice do texto (0 ou 1)
+class _HowToPlayPvPScreenState extends State<HowToPlayPvPScreen> {
+  int _currentTextIndex = 0; // Controla o índice do texto
 
-  // Lista de textos para exibir no container
   final List<List<String>> _instructions = [
     [
-      '• Um jogador escolherá um local (exceto os pontos cinzas).',
-      '• O outro jogador possui 3 bolas verdes e 3 bolas vermelhas. A cada vez, escolherá uma bola diferente, sendo:',
-      '• Bola verde: Seguirá o caminho para cima,',
+      '• Cada jogador escolherá um local diferente (exceto os pontos cinzas).',
+      '• O jogo possui 3 bolas verdes e 3 bolas vermelhas. A cada rodada será sorteada, uma única vez, uma bola diferente, sendo:',
+      '• Bola verde: Seguirá o caminho para direita,',
     ],
     [
-      '• Bola vermelha: Seguirá o caminho para a direita.',
+      '• Bola vermelha: Seguirá o caminho para cima.',
       '• O jogo termina quando chega-se no outro ponto cinza.',
-      '• Se o caminho passar pelo local escolhido, ambos ganham!',
+      '• Se o caminho passar por um dos locais escolhidos, o respectivo player ganha o jogo!',
     ]
   ];
 
@@ -44,7 +43,6 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Botões de navegação superior
             Padding(
               padding: EdgeInsets.symmetric(
                 vertical: screenHeight * 0.03,
@@ -57,15 +55,11 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                     icon: Icons.arrow_back_outlined,
                     onPressed: () {
                       if (_currentTextIndex > 0) {
-                        setState(() {
-                          _currentTextIndex--; // Voltar para o texto anterior
-                        });
+                        setState(() => _currentTextIndex--);
                       } else {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => GameModeScreen(),
-                          ),
+                          MaterialPageRoute(builder: (context) => GameModeScreen()),
                         );
                       }
                     },
@@ -82,16 +76,11 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                     icon: Icons.arrow_forward_outlined,
                     onPressed: () {
                       if (_currentTextIndex < _instructions.length - 1) {
-                        setState(() {
-                          _currentTextIndex++; // Avançar para o próximo texto
-                        });
+                        setState(() => _currentTextIndex++);
                       } else {
-                        // Navega diretamente para GameScreenDois
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => TwoGameScreen(),
-                          ),
+                          MaterialPageRoute(builder: (context) => TwoGameScreen()),
                         );
                       }
                     },
@@ -100,7 +89,6 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
               ),
             ),
 
-            // Título "Como jogar!"
             Padding(
               padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
               child: Text(
@@ -114,7 +102,6 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
               ),
             ),
 
-            // Container com altura fixa e texto dinâmico centralizado
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -126,10 +113,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                   decoration: BoxDecoration(
                     color: Color(0xFF257F98),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Color(0xFFF5B51C),
-                      width: 3,
-                    ),
+                    border: Border.all(color: Color(0xFFF5B51C), width: 3),
                   ),
                   child: ListView.builder(
                     itemCount: _instructions[_currentTextIndex].length,
@@ -153,7 +137,6 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
               ),
             ),
 
-            // Ícones "Jogador vs Jogador"
             Padding(
               padding: EdgeInsets.only(bottom: screenHeight * 0.02),
               child: Row(
@@ -162,11 +145,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                 children: [
                   Flexible(
                     flex: 2,
-                    child: Icon(
-                      Icons.person_2_outlined,
-                      size: screenWidth * 0.10,
-                      color: Color(0xFF163F58),
-                    ),
+                    child: Icon(Icons.person, size: screenWidth * 0.10, color: Color(0xFF163F58)),
                   ),
                   SizedBox(width: screenWidth * 0.03),
                   Flexible(
@@ -181,11 +160,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                   SizedBox(width: screenWidth * 0.03),
                   Flexible(
                     flex: 2,
-                    child: Icon(
-                      Icons.person_2_outlined,
-                      size: screenWidth * 0.10,
-                      color: Color(0xFF163F58),
-                    ),
+                    child: Icon(Icons.person, size: screenWidth * 0.10, color: Color(0xFF163F58)),
                   ),
                 ],
               ),
@@ -196,8 +171,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
     );
   }
 
-  Widget _buildNavigationButton(
-      {required IconData icon, required VoidCallback onPressed}) {
+  Widget _buildNavigationButton({required IconData icon, required VoidCallback onPressed}) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -205,16 +179,9 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
         backgroundColor: Color(0xFF3088BE),
         padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
         shadowColor: Colors.transparent,
-        side: BorderSide(
-          color: Color(0xFFF5B51C),
-          width: 3,
-        ),
+        side: BorderSide(color: Color(0xFFF5B51C), width: 3),
       ),
-      child: Icon(
-        icon,
-        size: MediaQuery.of(context).size.width * 0.07,
-        color: Color(0xFFF5B51C),
-      ),
+      child: Icon(icon, size: MediaQuery.of(context).size.width * 0.07, color: Color(0xFFF5B51C)),
     );
   }
 }

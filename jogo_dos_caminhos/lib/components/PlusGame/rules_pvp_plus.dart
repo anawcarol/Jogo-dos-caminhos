@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
-import 'choose_screen.dart'; // Tela para voltar
-import 'solo_game.dart'; // Tela para avançar
+import 'package:jogo_dos_caminhos/components/PlusGame/two_game_plus.dart';
+import '../choose_screen.dart'; // Tela para voltar
+import '../TwoGame/two_game.dart';  // Tela do jogo
 
-class HowToPlayScreen extends StatefulWidget {
+class HowToPlayPvPlusScreen extends StatefulWidget {
   @override
-  _HowToPlayScreenState createState() => _HowToPlayScreenState();
+  _HowToPlayPvPlusScreenState createState() => _HowToPlayPvPlusScreenState();
 }
 
-class _HowToPlayScreenState extends State<HowToPlayScreen> {
-  int _currentTextIndex = 0; // Controla o índice do texto (0 ou 1)
+class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
+  int _currentTextIndex = 0;
 
-  // Lista de textos para exibir no container
   final List<List<String>> _instructions = [
     [
-      '• O jogador escolherá um local (exceto os pontos cinzas).',
-      '• O jogo possui 3 bolas verdes e 3 bolas vermelhas. A cada rodada será sorteada, uma única vez, uma bola diferente, sendo:',
-      '• Bola verde: Seguirá o caminho para cima,',
+      '• O jogo é disputado em 2 rodadas.',
+      '• 1ª rodada: Jogador 1 escolhe um destino (qualquer casa que não seja cinza). Jogador 2 traça o caminho até lá.',
+       '• 2ª rodada: o Jogador 2 traça um caminho conforme desejar.',
     ],
     [
-      '• Bola vermelha: Seguirá o caminho para a direita.',
-      '• O jogo termina quando chega-se no outro ponto cinza.',
-      '• Se o caminho passar pelo local escolhido vence-se o jogo!',
-    ]
+      '• Sendo possível mover apenas para direita ou para cima',
+      '• O jogador 1 vence o jogo caso o jogador 2 não consiga traçar o caminho pelo o seu ponto escolhido, caso o jogador 2 consiga, assim o jogador 2 vencerá o jogo.',
+    ],
   ];
 
   @override
@@ -33,7 +32,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF163F58), Color(0xFF3088BE)],
             stops: [0.3, 1.0],
@@ -58,7 +57,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                     onPressed: () {
                       if (_currentTextIndex > 0) {
                         setState(() {
-                          _currentTextIndex--; // Voltar para o texto anterior
+                          _currentTextIndex--;
                         });
                       } else {
                         Navigator.pushReplacement(
@@ -74,7 +73,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                   _buildNavigationButton(
                     icon: Icons.volume_up_outlined,
                     onPressed: () {
-                      // Lógica para som
+                      // Aqui você pode colocar a lógica para tocar um som se quiser
                     },
                   ),
                   SizedBox(width: screenWidth * 0.05),
@@ -83,14 +82,13 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                     onPressed: () {
                       if (_currentTextIndex < _instructions.length - 1) {
                         setState(() {
-                          _currentTextIndex++; // Avança para o próximo texto
+                          _currentTextIndex++;
                         });
                       } else {
-                        // Navegar para a próxima tela
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LocationSelectionScreen(),
+                            builder: (context) => TwoGamePlusScreen(),
                           ),
                         );
                       }
@@ -100,7 +98,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
               ),
             ),
 
-            // Título "Como jogar!"
+            // Título
             Padding(
               padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
               child: Text(
@@ -114,7 +112,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
               ),
             ),
 
-            // Container com altura fixa e texto dinâmico centralizado
+            // Container sem scroll com instruções
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -131,29 +129,32 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                       width: 3,
                     ),
                   ),
-                  child: ListView.builder(
-                    itemCount: _instructions[_currentTextIndex].length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          _instructions[_currentTextIndex][index],
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.06,
-                            color: Colors.white,
-                            fontFamily: 'Philosopher',
-                            height: 1.7,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _instructions[_currentTextIndex]
+                        .map(
+                          (instruction) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Text(
+                              instruction,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.06,
+                                color: Colors.white,
+                                fontFamily: 'Philosopher',
+                                height: 1.7,
+                              ),
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        )
+                        .toList(),
                   ),
                 ),
               ),
             ),
 
-            // Ícones "Jogador vs Máquina"
+            // Ícones Jogador vs Jogador
             Padding(
               padding: EdgeInsets.only(bottom: screenHeight * 0.02),
               child: Row(
@@ -163,7 +164,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                   Flexible(
                     flex: 2,
                     child: Icon(
-                      Icons.person,
+                      Icons.person_2_outlined,
                       size: screenWidth * 0.10,
                       color: Color(0xFF163F58),
                     ),
@@ -182,7 +183,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
                   Flexible(
                     flex: 2,
                     child: Icon(
-                      Icons.smart_toy,
+                      Icons.person_2_outlined,
                       size: screenWidth * 0.10,
                       color: Color(0xFF163F58),
                     ),
@@ -196,14 +197,17 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
     );
   }
 
-  Widget _buildNavigationButton(
-      {required IconData icon, required VoidCallback onPressed}) {
+  Widget _buildNavigationButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         shape: CircleBorder(),
         backgroundColor: Color(0xFF3088BE),
-        padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+        padding: EdgeInsets.all(screenWidth * 0.05),
         shadowColor: Colors.transparent,
         side: BorderSide(
           color: Color(0xFFF5B51C),
@@ -212,7 +216,7 @@ class _HowToPlayScreenState extends State<HowToPlayScreen> {
       ),
       child: Icon(
         icon,
-        size: MediaQuery.of(context).size.width * 0.07,
+        size: screenWidth * 0.07,
         color: Color(0xFFF5B51C),
       ),
     );

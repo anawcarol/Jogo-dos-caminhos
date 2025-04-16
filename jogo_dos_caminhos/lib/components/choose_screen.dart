@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import 'rules_bot.dart';
-import 'rules_pvp.dart';
-import 'rules_pvp_plus.dart';
+import 'SoloGame/rules_bot.dart';
+import 'TwoGame/rules_pvp.dart';
+import 'PlusGame/rules_pvp_plus.dart';
 
 class GameModeScreen extends StatelessWidget {
   @override
