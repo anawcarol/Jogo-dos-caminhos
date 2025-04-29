@@ -46,7 +46,7 @@ class GameControllerPlus extends ChangeNotifier {
   }
 
   // ---------- Interactions ----------
-    void onCellTap(int index) {
+  void onCellTap(int index) async {
     if (_restricted.contains(index) || phase == Phase.finished) return;
 
     int row = index ~/ 4, col = index % 4;
@@ -61,13 +61,17 @@ class GameControllerPlus extends ChangeNotifier {
           curX = row;
           curY = col;
           visited[row][col] = true;
-          
+
           if (destP1[index]) {
             passedThroughDest = true;
           }
-          
+
           if (curX == 0 && curY == 3) {
             phase = Phase.finished;
+
+            // Aguarda 3 segundos antes de definir o resultado.
+            await Future.delayed(const Duration(seconds: 3));
+
             if (passedThroughDest) {
               player1Won = true;
               resultMessage = 'Jogador 1 venceu!';

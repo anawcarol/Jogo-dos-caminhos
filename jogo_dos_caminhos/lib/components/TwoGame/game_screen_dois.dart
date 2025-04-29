@@ -90,32 +90,33 @@ class _GameScreenDoisState extends State<GameScreenDois> {
     }
   }
 
-  void _finalizarJogo() {
+  void _finalizarJogo() async {
     if (gameFinished) return;
-    
+
     gameFinished = true;
-    
+
     bool player1Wins = _checkPlayerWin(widget.selectedLocationsPlayer1);
     bool player2Wins = _checkPlayerWin(widget.selectedLocationsPlayer2);
-    
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (player1Wins || player2Wins) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => WinScreen(
-              player1Won: player1Wins,
-              player2Won: player2Wins,
-            ),
+
+    // Aguarda 3 segundos antes de redirecionar para a tela correspondente.
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (player1Wins || player2Wins) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => WinScreen(
+            player1Won: player1Wins,
+            player2Won: player2Wins,
           ),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => KillScreen()),
-        );
-      }
-    });
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => KillScreen()),
+      );
+    }
   }
 
   bool _checkPlayerWin(List<bool> playerLocations) {
@@ -294,6 +295,16 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                         ] : [],
                       ),
                     ),
+                    const SizedBox(height: 8.0),
+                    if (ballColor != null)
+                      Text(
+                        ballColor == Colors.green ? 'Para direita' : 'Para cima',
+                        style: TextStyle(
+                          color: const Color(0xFFF5B51C),
+                          fontSize: screenWidth * 0.045,
+                          fontFamily: 'Aclonica',
+                        ),
+                      ),
                     const SizedBox(height: 16.0),
                     ElevatedButton(
                       onPressed: gameFinished ? null : _sortearBola,

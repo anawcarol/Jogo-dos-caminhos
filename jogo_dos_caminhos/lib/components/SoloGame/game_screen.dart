@@ -21,31 +21,54 @@ class _GameScreenState extends State<GameScreen> {
     Colors.red,
     Colors.red,
   ];
-  Color? ballColor; // Alterado para nullable
+  Color? ballColor;
   List<String> sortedBalls = [];
-  // Matriz que marca as células visitadas (movimento do caminho).
   List<List<bool>> matrix = List.generate(4, (_) => List.filled(4, false));
-  // Matriz para marcar a célula selecionada na tela anterior.
   List<List<bool>> yellowMatrix = List.generate(4, (_) => List.filled(4, false));
   List<Offset> path = [];
-  int currentX = 3; // Linha inicial (de baixo)
-  int currentY = 0; // Coluna inicial
-  bool? victory; // true se vitória, false se derrota
+  int currentX = 3;
+  int currentY = 0;
+  bool? victory;
+  bool isBlinking = false;
 
   @override
   void initState() {
     super.initState();
-    // Inicializa o ponto de partida.
     path.add(Offset(currentX.toDouble(), currentY.toDouble()));
     matrix[currentX][currentY] = true;
 
-    // Marca a célula selecionada na primeira tela.
     int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
     if (selectedIndex != -1) {
       int row = selectedIndex ~/ 4;
       int col = selectedIndex % 4;
       yellowMatrix[row][col] = true;
     }
+  }
+
+  Future<void> _piscarPontoSelecionado(int row, int col) async {
+    setState(() {
+      isBlinking = true;
+    });
+
+    for (int i = 0; i < 2; i++) {
+      setState(() {
+        yellowMatrix[row][col] = false;
+      });
+      await Future.delayed(const Duration(milliseconds: 150));
+      setState(() {
+        yellowMatrix[row][col] = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 150));
+      setState(() {
+        yellowMatrix[row][col] = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 150));
+    }
+
+    setState(() {
+      yellowMatrix[row][col] = false;
+      isBlinking = false;
+    });
   }
 
   void _sortearBola() {
@@ -58,49 +81,55 @@ class _GameScreenState extends State<GameScreen> {
 
       _calcularCaminho(ballColor!);
 
-      // Quando não houver mais bolas, verifica vitória.
       if (balls.isEmpty) {
         _checkVictory();
       }
     });
   }
 
-  void _calcularCaminho(Color bola) {
+  void _calcularCaminho(Color bola) async {
     int nextX = currentX;
     int nextY = currentY;
 
     if (bola == Colors.green) {
-      // Movimento para a direita, se possível.
       if (currentY + 1 < 4 && !matrix[currentX][currentY + 1]) {
         nextY = currentY + 1;
       }
     } else {
-      // Movimento para cima, se possível.
       if (currentX - 1 >= 0 && !matrix[currentX - 1][currentY]) {
         nextX = currentX - 1;
       }
     }
 
-    // Atualiza a posição se houver mudança.
     if (nextX != currentX || nextY != currentY) {
       currentX = nextX;
       currentY = nextY;
       matrix[currentX][currentY] = true;
       path.add(Offset(currentX.toDouble(), currentY.toDouble()));
+
+      int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
+      if (selectedIndex != -1) {
+        int selectedRow = selectedIndex ~/ 4;
+        int selectedCol = selectedIndex % 4;
+
+        if (currentX == selectedRow && currentY == selectedCol) {
+          await _piscarPontoSelecionado(selectedRow, selectedCol);
+        }
+      }
     }
   }
 
-  void _checkVictory() {
+  void _checkVictory() async {
     int selectedIndex = widget.selectedLocations.indexWhere((element) => element);
     if (selectedIndex != -1) {
       int row = selectedIndex ~/ 4;
       int col = selectedIndex % 4;
 
-      // Verifica se algum ponto do caminho corresponde à célula selecionada.
       bool win = path.any((offset) => offset.dx.toInt() == row && offset.dy.toInt() == col);
       victory = win;
 
-      // Redireciona para a tela correspondente
+      await Future.delayed(const Duration(seconds: 3));
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -154,12 +183,8 @@ class _GameScreenState extends State<GameScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Linha de navegação superior.
               Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 16.0,
-                  horizontal: 16.0,
-                ),
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -188,9 +213,8 @@ class _GameScreenState extends State<GameScreen> {
                   ],
                 ),
               ),
-              // Título.
               Padding(
-                padding: const EdgeInsets.only(top: 100.0),
+                padding: const EdgeInsets.only(top: 70.0),
                 child: Column(
                   children: [
                     Text(
@@ -201,21 +225,14 @@ class _GameScreenState extends State<GameScreen> {
                         fontFamily: 'Aclonica',
                       ),
                     ),
-                    SizedBox(height: 25.0), // Increased space below the title
+                    SizedBox(height: 25.0),
                   ],
                 ),
               ),
-
               SizedBox(height: 5.0),
-              // Área de jogo: grid de células.
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    screenWidth * 0.05, // Left padding
-                    0,                  // Top padding
-                    screenWidth * 0.05, // Right padding
-                    8.0,                // Reduced bottom padding
-                  ),
+                  padding: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 8.0),
                   child: GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -229,7 +246,7 @@ class _GameScreenState extends State<GameScreen> {
                       int row = index ~/ 4;
                       int col = index % 4;
                       return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 200),
                         decoration: BoxDecoration(
                           color: yellowMatrix[row][col]
                               ? Colors.yellow
@@ -247,7 +264,6 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               ),
-              // Informações da bola sorteada.
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Column(
@@ -269,21 +285,32 @@ class _GameScreenState extends State<GameScreen> {
                       decoration: BoxDecoration(
                         color: ballColor ?? Colors.transparent,
                         shape: BoxShape.circle,
-                        boxShadow: ballColor != null ? [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 10,
-                            offset: const Offset(5, 5),
-                          ),
-                        ] : [],
+                        boxShadow: ballColor != null
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.5),
+                                  blurRadius: 10,
+                                  offset: const Offset(5, 5),
+                                ),
+                              ]
+                            : [],
                       ),
                     ),
+                    const SizedBox(height: 8.0),
+                    if (ballColor != null)
+                      Text(
+                        ballColor == Colors.green ? 'Para direita' : 'Para cima',
+                        style: TextStyle(
+                          color: const Color(0xFFF5B51C),
+                          fontSize: screenWidth * 0.045,
+                          fontFamily: 'Aclonica',
+                        ),
+                      ),
                   ],
                 ),
               ),
-              // Botão para sortear bola.
-             Padding(
-                padding: const EdgeInsets.only(bottom: 16.0, top: 20.0), // Increased top padding
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0, top: 20.0),
                 child: ElevatedButton(
                   onPressed: balls.isEmpty ? null : _sortearBola,
                   style: ElevatedButton.styleFrom(
