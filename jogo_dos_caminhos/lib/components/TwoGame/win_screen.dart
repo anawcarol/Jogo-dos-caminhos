@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+// Importa as telas necessárias
 import '../home_screen.dart';
 import '../info_screen.dart';
 import 'two_game.dart';
 
 class WinScreen extends StatelessWidget {
+  // Declaração de variáveis para determinar o vencedor
   final bool player1Won;
   final bool player2Won;
 
@@ -15,10 +17,11 @@ class WinScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Obtém as dimensões da tela para layout responsivo
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Determina o título com base nos vencedores
+    // Determina o título com base no vencedor
     String title = '';
     if (player1Won && player2Won) {
       title = 'Ambos Venceram!';
@@ -29,16 +32,18 @@ class WinScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      // Tela com fundo gradiente
       body: GradientBackground(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // Botões de Info e Volume
+            // Botões de Info e Volume no topo
             Padding(
               padding: EdgeInsets.all(screenWidth * 0.04),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Botão de informações
                   _buildCircularButton(icon: Icons.info_outline, onPressed: () {
                     Navigator.push(
                       context,
@@ -46,6 +51,7 @@ class WinScreen extends StatelessWidget {
                     );
                   }),
                   SizedBox(width: screenWidth * 0.05),
+                  // Botão de volume (sem funcionalidade implementada)
                   _buildCircularButton(
                     icon: Icons.volume_up_outlined,
                     onPressed: () {},
@@ -56,12 +62,12 @@ class WinScreen extends StatelessWidget {
 
             SizedBox(height: screenHeight * 0.05),
 
-            // Título dinâmico
+            // Exibe o título dinâmico com base no vencedor
             Text(
               title,
-              textAlign: TextAlign.center, // Centraliza horizontalmente
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: screenWidth * 0.08, // Diminui o tamanho da fonte
+                fontSize: screenWidth * 0.08,
                 fontFamily: 'Aclonica',
                 color: Color(0xFFF5B51C),
               ),
@@ -69,7 +75,7 @@ class WinScreen extends StatelessWidget {
 
             SizedBox(height: screenHeight * 0.02),
 
-            // Imagem - pode ser dinâmica também se quiser
+            // Exibe uma imagem de troféu
             Image.asset(
               'assets/imagens/trofeu.png',
               width: screenWidth * 0.8,
@@ -79,10 +85,11 @@ class WinScreen extends StatelessWidget {
 
             SizedBox(height: screenHeight * 0.02),
 
-            // Botões de ação
+            // Botões de ação (Home e Reiniciar)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Botão para voltar à tela inicial
                 _buildCircularButton(
                   icon: Icons.home,
                   onPressed: () {
@@ -94,6 +101,7 @@ class WinScreen extends StatelessWidget {
                   isLarger: true,
                 ),
                 SizedBox(width: screenWidth * 0.05),
+                // Botão para reiniciar o jogo
                 _buildCircularButton(
                   icon: Icons.refresh,
                   onPressed: () {
@@ -107,13 +115,14 @@ class WinScreen extends StatelessWidget {
               ],
             ),
 
-            Spacer(),
+            Spacer(), // Adiciona espaço flexível no final
           ],
         ),
       ),
     );
   }
 
+  // Método para criar bot��es circulares reutilizáveis
   Widget _buildCircularButton({
     required IconData icon,
     required VoidCallback onPressed,

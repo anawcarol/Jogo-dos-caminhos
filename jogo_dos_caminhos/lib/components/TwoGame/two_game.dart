@@ -5,6 +5,7 @@ import 'win_screen.dart';
 import 'kill_screen.dart';
 
 class TwoGameScreen extends StatefulWidget {
+  // Tela inicial para o modo de jogo de dois jogadores
   const TwoGameScreen({Key? key}) : super(key: key);
 
   @override
@@ -12,12 +13,14 @@ class TwoGameScreen extends StatefulWidget {
 }
 
 class _TwoGameScreenState extends State<TwoGameScreen> {
+  // Listas para armazenar as seleções dos jogadores
   List<bool> selectedLocationsPlayer1 = List.filled(16, false);
   List<bool> selectedLocationsPlayer2 = List.filled(16, false);
-  bool isPlayer1Selection = true;
-  final List<int> restrictedIndices = [3, 12];
+  bool isPlayer1Selection = true; // Indica se é a vez do jogador 1
+  final List<int> restrictedIndices = [3, 12]; // Índices restritos no tabuleiro
 
   void _handleLocationSelection(int index) {
+    // Lida com a seleção de uma posição no tabuleiro
     if (restrictedIndices.contains(index)) return;
 
     setState(() {
@@ -32,6 +35,7 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
   }
 
   void _confirmSelection() {
+    // Confirma a seleção do jogador atual
     if ((isPlayer1Selection && selectedLocationsPlayer1.every((e) => !e)) ||
         (!isPlayer1Selection && selectedLocationsPlayer2.every((e) => !e))) {
       return;
@@ -49,6 +53,7 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
               selectedLocationsPlayer1: selectedLocationsPlayer1,
               selectedLocationsPlayer2: selectedLocationsPlayer2,
               onGameFinished: (bool player1Won, bool player2Won) {
+                // Navega para a tela de vitória ou derrota
                 if (player1Won || player2Won) {
                   Navigator.pushReplacement(
                     context,
@@ -80,6 +85,7 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
     required IconData icon,
     required VoidCallback onPressed,
   }) {
+    // Cria botões de navegação reutilizáveis
     final screenWidth = MediaQuery.of(context).size.width;
     return ElevatedButton(
       onPressed: onPressed,
@@ -104,7 +110,7 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -118,7 +124,7 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Header
+              // Header com botões de navegação
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                 child: Row(
@@ -149,7 +155,7 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
 
               const SizedBox(height: 30.0),
 
-              // Title
+              // Título dinâmico indicando o jogador atual
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Center(
@@ -167,7 +173,7 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
 
               const SizedBox(height: 30.0),
 
-              // Game Grid
+              // Tabuleiro do jogo
               Flexible(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
@@ -223,7 +229,7 @@ class _TwoGameScreenState extends State<TwoGameScreen> {
 
               const SizedBox(height: 30.0),
 
-              // Footer
+              // Rodapé com botão de confirmação
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Column(

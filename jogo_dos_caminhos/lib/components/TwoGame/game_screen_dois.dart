@@ -29,12 +29,17 @@ class _GameScreenDoisState extends State<GameScreenDois> {
     Colors.red,
     Colors.red,
   ];
-  Color? ballColor; // Alterado para nullable
+  Color? ballColor;
   List<List<bool>> matrix = List.generate(4, (_) => List.filled(4, false));
+  List<List<bool>> visitedPoints = List.generate(4, (_) => List.filled(4, false));
   List<Offset> path = [];
   int currentX = 3;
   int currentY = 0;
   bool gameFinished = false;
+  bool isBlinking = false;
+  int? blinkingRow;
+  int? blinkingCol;
+  bool showIndigo = false;
 
   @override
   void initState() {
@@ -45,11 +50,44 @@ class _GameScreenDoisState extends State<GameScreenDois> {
   void _resetGame() {
     path.clear();
     matrix = List.generate(4, (_) => List.filled(4, false));
+    visitedPoints = List.generate(4, (_) => List.filled(4, false));
     currentX = 3;
     currentY = 0;
     path.add(Offset(currentX.toDouble(), currentY.toDouble()));
     matrix[currentX][currentY] = true;
     gameFinished = false;
+    isBlinking = false;
+    blinkingRow = null;
+    blinkingCol = null;
+    showIndigo = false;
+  }
+
+  Future<void> _piscarPontoSelecionado(int row, int col) async {
+    setState(() {
+      isBlinking = true;
+      blinkingRow = row;
+      blinkingCol = col;
+    });
+
+    // Efeito de piscar 3 vezes (alternando entre a cor original e indigo)
+    for (int i = 0; i < 3; i++) {
+      setState(() {
+        showIndigo = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 150));
+      
+      setState(() {
+        showIndigo = false;
+      });
+      await Future.delayed(const Duration(milliseconds: 150));
+    }
+
+    setState(() {
+      visitedPoints[row][col] = true; // Marca como visitado permanentemente
+      isBlinking = false;
+      blinkingRow = null;
+      blinkingCol = null;
+    });
   }
 
   void _sortearBola() {
@@ -59,14 +97,13 @@ class _GameScreenDoisState extends State<GameScreenDois> {
       ballColor = balls.removeAt(Random().nextInt(balls.length));
       _calcularCaminho(ballColor!);
       
-      // Verifica se o jogo terminou
       if (balls.isEmpty || (currentX == 0 && currentY == 3)) {
         _finalizarJogo();
       }
     });
   }
 
-  void _calcularCaminho(Color bola) {
+  void _calcularCaminho(Color bola) async {
     int nextX = currentX;
     int nextY = currentY;
 
@@ -82,11 +119,29 @@ class _GameScreenDoisState extends State<GameScreenDois> {
         currentY = nextY;
         matrix[currentX][currentY] = true;
         path.add(Offset(currentX.toDouble(), currentY.toDouble()));
-        
-        if (currentX == 0 && currentY == 3) {
-          _finalizarJogo();
-        }
       });
+
+      // Verifica se passou pelo ponto do Player 1
+      int indexP1 = widget.selectedLocationsPlayer1.indexWhere((e) => e);
+      if (indexP1 != -1) {
+        int rowP1 = indexP1 ~/ 4, colP1 = indexP1 % 4;
+        if (currentX == rowP1 && currentY == colP1 && !visitedPoints[rowP1][colP1]) {
+          await _piscarPontoSelecionado(rowP1, colP1);
+        }
+      }
+
+      // Verifica se passou pelo ponto do Player 2
+      int indexP2 = widget.selectedLocationsPlayer2.indexWhere((e) => e);
+      if (indexP2 != -1) {
+        int rowP2 = indexP2 ~/ 4, colP2 = indexP2 % 4;
+        if (currentX == rowP2 && currentY == colP2 && !visitedPoints[rowP2][colP2]) {
+          await _piscarPontoSelecionado(rowP2, colP2);
+        }
+      }
+
+      if (currentX == 0 && currentY == 3) {
+        _finalizarJogo();
+      }
     }
   }
 
@@ -98,7 +153,6 @@ class _GameScreenDoisState extends State<GameScreenDois> {
     bool player1Wins = _checkPlayerWin(widget.selectedLocationsPlayer1);
     bool player2Wins = _checkPlayerWin(widget.selectedLocationsPlayer2);
 
-    // Aguarda 3 segundos antes de redirecionar para a tela correspondente.
     await Future.delayed(const Duration(seconds: 3));
 
     if (player1Wins || player2Wins) {
@@ -239,17 +293,22 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                       int row = index ~/ 4, col = index % 4;
                       bool isSelectedP1 = widget.selectedLocationsPlayer1[index];
                       bool isSelectedP2 = widget.selectedLocationsPlayer2[index];
+                      bool wasVisited = visitedPoints[row][col];
+                      bool isBlinkingNow = isBlinking && blinkingRow == row && blinkingCol == col;
+
+                      Color getCellColor() {
+                        if (wasVisited) return Colors.indigo[800]!;
+                        if (isBlinkingNow) return showIndigo ? Colors.indigo[800]! : 
+                            (isSelectedP1 ? const Color(0xFFF5B51C) : const Color.fromARGB(255, 7, 62, 77));
+                        if (isSelectedP1) return const Color(0xFFF5B51C);
+                        if (isSelectedP2) return const Color.fromARGB(255, 7, 62, 77);
+                        return matrix[row][col] ? Colors.indigo[800]! : const Color.fromARGB(255, 39, 126, 136);
+                      }
 
                       return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 150),
                         decoration: BoxDecoration(
-                          color: isSelectedP1
-                              ? const Color(0xFFF5B51C)
-                              : isSelectedP2
-                                  ? const Color.fromARGB(255, 7, 62, 77)
-                                  : matrix[row][col]
-                                      ? Colors.indigo[800]
-                                      : const Color.fromARGB(255, 39, 126, 136),
+                          color: getCellColor(),
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: const Color(0xFFF5B51C),

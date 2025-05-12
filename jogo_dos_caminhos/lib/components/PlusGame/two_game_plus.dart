@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../home_screen.dart';
 import '../info_screen.dart';
 import 'game_controller_plus.dart';
+import 'result_screen.dart'; // Importe a tela de resultados unificada
 
 class TwoGamePlusScreen extends StatefulWidget {
   const TwoGamePlusScreen({Key? key}) : super(key: key);
@@ -24,7 +26,6 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
           context,
           MaterialPageRoute(
             builder: (_) => GameResultScreen(
-              result: _controller.resultMessage,
               player1Won: _controller.player1Won,
               player2Won: _controller.player2Won,
             ),
@@ -39,6 +40,19 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
           _controller.notifyListeners();
         });
       }
+      
+      // Mostrar popup se houver mensagem
+      if (_controller.popupMsg != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(_controller.popupMsg!),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          _controller.clearPopup();
+        });
+      }
     };
     _controller.addListener(_listener);
   }
@@ -50,18 +64,28 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
     super.dispose();
   }
 
-  Widget _buildNavigationButton({required IconData icon, required VoidCallback onPressed}) {
+  Widget _buildNavigationButton({
+    required IconData icon, 
+    required VoidCallback onPressed,
+    bool isLarger = false,
+  }) {
     final w = MediaQuery.of(context).size.width;
-    return ElevatedButton(
+    return OutlinedButton(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
+      style: OutlinedButton.styleFrom(
         shape: const CircleBorder(),
         backgroundColor: const Color(0xFF3088BE),
-        padding: EdgeInsets.all(w * 0.05),
-        shadowColor: Colors.transparent,
-        side: const BorderSide(color: Color(0xFFF5B51C), width: 3),
+        padding: EdgeInsets.all(isLarger ? 30 : w * 0.05),
+        side: const BorderSide(
+          color: Color(0xFFF5B51C),
+          width: 3,
+        ),
       ),
-      child: Icon(icon, size: w * 0.07, color: const Color(0xFFF5B51C)),
+      child: Icon(
+        icon,
+        size: isLarger ? 50 : w * 0.07,
+        color: const Color(0xFFF5B51C),
+      ),
     );
   }
 
@@ -87,19 +111,27 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
                 children: [
                   // Header with navigation buttons
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 20, 
+                      horizontal: w * 0.04,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildNavigationButton(
-                          icon: Icons.info,
+                          icon: Icons.info_outline,
                           onPressed: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => GameInfoScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => GameInfoScreen(),
+                            ),
                           ),
                         ),
                         SizedBox(width: w * 0.05),
-                        _buildNavigationButton(icon: Icons.volume_up, onPressed: () {}),
+                        _buildNavigationButton(
+                          icon: Icons.volume_up_outlined, 
+                          onPressed: () {},
+                        ),
                         SizedBox(width: w * 0.05),
                         _buildNavigationButton(
                           icon: Icons.arrow_back,
@@ -109,11 +141,11 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 30),
+                  SizedBox(height: w * 0.05),
 
                   // Game title
                   Padding(
-                    padding: const EdgeInsets.only(top: 20),
+                    padding: EdgeInsets.only(top: w * 0.02),
                     child: Text(
                       _controller.title,
                       textAlign: TextAlign.center,
@@ -125,12 +157,15 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 60),
+                  SizedBox(height: w * 0.1),
 
                   // Game grid
                   Flexible(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: 2),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: w * 0.05, 
+                        vertical: 2,
+                      ),
                       child: GridView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -147,7 +182,10 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
                             decoration: BoxDecoration(
                               color: _controller.cellColor(i),
                               shape: BoxShape.circle,
-                              border: Border.all(color: const Color(0xFFF5B51C), width: 3),
+                              border: Border.all(
+                                color: const Color(0xFFF5B51C), 
+                                width: 3,
+                              ),
                             ),
                           ),
                         ),
@@ -155,23 +193,27 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 5),
+                  SizedBox(height: w * 0.05),
 
                   // Confirm button
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 50),
+                    padding: EdgeInsets.only(bottom: w * 0.1),
                     child: Column(
                       children: [
                         if (_controller.showConfirm)
                           Padding(
-                            padding: const EdgeInsets.only(top: 5),
+                            padding: EdgeInsets.only(top: w * 0.02),
                             child: ElevatedButton(
                               onPressed: _controller.confirmSelection,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF3088BE),
-                                padding: EdgeInsets.symmetric(horizontal: w * 0.1, vertical: 16),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: w * 0.1, 
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
                               ),
                               child: Text(
                                 'Confirmar',
@@ -191,64 +233,6 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-// Temporary result screen - replace with your own implementation
-class GameResultScreen extends StatelessWidget {
-  final String result;
-  final bool player1Won;
-  final bool player2Won;
-
-  const GameResultScreen({
-    Key? key,
-    required this.result,
-    required this.player1Won,
-    required this.player2Won,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF163F58),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              result,
-              style: const TextStyle(
-                color: Color(0xFFF5B51C),
-                fontSize: 32,
-                fontFamily: 'Aclonica',
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              player1Won 
-                  ? 'O caminho passou pelo destino escolhido!'
-                  : 'O caminho não passou pelo destino!',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-              ),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3088BE),
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              ),
-              child: const Text(
-                'Voltar',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

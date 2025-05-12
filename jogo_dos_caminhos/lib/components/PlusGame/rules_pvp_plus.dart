@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:jogo_dos_caminhos/components/PlusGame/two_game_plus.dart';
-import '../choose_screen.dart'; // Tela para voltar
-import '../TwoGame/two_game.dart';  // Tela do jogo
+import '../choose_screen.dart'; // Tela para voltar  
 
+// Tela de instruções para o modo PvP Plus
 class HowToPlayPvPlusScreen extends StatefulWidget {
   @override
   _HowToPlayPvPlusScreenState createState() => _HowToPlayPvPlusScreenState();
 }
 
 class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
-  int _currentTextIndex = 0;
+  int _currentTextIndex = 0; // Índice para controlar qual conjunto de instruções está sendo exibido
 
+  // Lista de instruções dividida em páginas
   final List<List<String>> _instructions = [
     [
       '• O jogo é disputado em 2 rodadas.',
       '• 1ª rodada: Jogador 1 escolhe um destino (qualquer casa que não seja cinza). Jogador 2 traça o caminho até lá.',
-       '• 2ª rodada: o Jogador 2 traça um caminho conforme desejar.',
+      '• 2ª rodada: o Jogador 2 traça um caminho conforme desejar.',
     ],
     [
       '• Sendo possível mover apenas para direita ou para cima',
@@ -25,14 +26,15 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height; // Altura da tela
+    final screenWidth = MediaQuery.of(context).size.width; // Largura da tela
 
     return Scaffold(
       body: Container(
         height: double.infinity,
         width: double.infinity,
         decoration: const BoxDecoration(
+          // Gradiente de fundo
           gradient: LinearGradient(
             colors: [Color(0xFF163F58), Color(0xFF3088BE)],
             stops: [0.3, 1.0],
@@ -52,6 +54,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Botão para voltar ou navegar para a página anterior
                   _buildNavigationButton(
                     icon: Icons.arrow_back_outlined,
                     onPressed: () {
@@ -70,6 +73,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                     },
                   ),
                   SizedBox(width: screenWidth * 0.05),
+                  // Botão para ativar som (não implementado)
                   _buildNavigationButton(
                     icon: Icons.volume_up_outlined,
                     onPressed: () {
@@ -77,6 +81,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                     },
                   ),
                   SizedBox(width: screenWidth * 0.05),
+                  // Botão para avançar ou ir para a próxima tela
                   _buildNavigationButton(
                     icon: Icons.arrow_forward_outlined,
                     onPressed: () {
@@ -98,7 +103,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
               ),
             ),
 
-            // Título
+            // Título da tela
             Padding(
               padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
               child: Text(
@@ -112,7 +117,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
               ),
             ),
 
-            // Container sem scroll com instruções
+            // Container com as instruções (sem scroll)
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -122,10 +127,10 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                 child: Container(
                   padding: EdgeInsets.all(screenWidth * 0.08),
                   decoration: BoxDecoration(
-                    color: Color(0xFF257F98),
-                    borderRadius: BorderRadius.circular(20),
+                    color: Color(0xFF257F98), // Cor de fundo do container
+                    borderRadius: BorderRadius.circular(20), // Bordas arredondadas
                     border: Border.all(
-                      color: Color(0xFFF5B51C),
+                      color: Color(0xFFF5B51C), // Cor da borda
                       width: 3,
                     ),
                   ),
@@ -154,7 +159,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
               ),
             ),
 
-            // Ícones Jogador vs Jogador
+            // Ícones representando o modo Jogador vs Jogador
             Padding(
               padding: EdgeInsets.only(bottom: screenHeight * 0.02),
               child: Row(
@@ -173,7 +178,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
                   Flexible(
                     flex: 3,
                     child: Image.asset(
-                      'assets/imagens/image_vs.png',
+                      'assets/imagens/image_vs.png', // Imagem "VS"
                       width: screenWidth * 0.15,
                       height: screenHeight * 0.08,
                       fit: BoxFit.contain,
@@ -197,6 +202,7 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
     );
   }
 
+  // Método para construir os botões de navegação
   Widget _buildNavigationButton({
     required IconData icon,
     required VoidCallback onPressed,
@@ -205,19 +211,19 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        shape: CircleBorder(),
-        backgroundColor: Color(0xFF3088BE),
-        padding: EdgeInsets.all(screenWidth * 0.05),
-        shadowColor: Colors.transparent,
+        shape: CircleBorder(), // Botão circular
+        backgroundColor: Color(0xFF3088BE), // Cor de fundo
+        padding: EdgeInsets.all(screenWidth * 0.05), // Espaçamento interno
+        shadowColor: Colors.transparent, // Sem sombra
         side: BorderSide(
-          color: Color(0xFFF5B51C),
+          color: Color(0xFFF5B51C), // Cor da borda
           width: 3,
         ),
       ),
       child: Icon(
         icon,
-        size: screenWidth * 0.07,
-        color: Color(0xFFF5B51C),
+        size: screenWidth * 0.07, // Tamanho do ícone
+        color: Color(0xFFF5B51C), // Cor do ícone
       ),
     );
   }
