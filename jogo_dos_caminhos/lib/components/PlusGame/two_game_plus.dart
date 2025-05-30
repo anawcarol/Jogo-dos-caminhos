@@ -40,7 +40,7 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
           _controller.notifyListeners();
         });
       }
-      
+
       // Mostrar popup se houver mensagem
       if (_controller.popupMsg != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -65,7 +65,7 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
   }
 
   Widget _buildNavigationButton({
-    required IconData icon, 
+    required IconData icon,
     required VoidCallback onPressed,
     bool isLarger = false,
   }) {
@@ -109,10 +109,10 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
             child: SafeArea(
               child: Column(
                 children: [
-                  // Header with navigation buttons
+                  // Header com botões de navegação
                   Padding(
                     padding: EdgeInsets.symmetric(
-                      vertical: 20, 
+                      vertical: 20,
                       horizontal: w * 0.04,
                     ),
                     child: Row(
@@ -129,7 +129,7 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
                         ),
                         SizedBox(width: w * 0.05),
                         _buildNavigationButton(
-                          icon: Icons.volume_up_outlined, 
+                          icon: Icons.volume_up_outlined,
                           onPressed: () {},
                         ),
                         SizedBox(width: w * 0.05),
@@ -143,7 +143,7 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
 
                   SizedBox(height: w * 0.05),
 
-                  // Game title
+                  // Título do jogo
                   Padding(
                     padding: EdgeInsets.only(top: w * 0.02),
                     child: Text(
@@ -157,34 +157,35 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
                     ),
                   ),
 
-                  SizedBox(height: w * 0.1),
-
-                  // Game grid
-                  Flexible(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: w * 0.05, 
-                        vertical: 2,
-                      ),
-                      child: GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: w * 0.02,
-                          mainAxisSpacing: w * 0.02,
-                          childAspectRatio: 1,
+                  // Tabuleiro centralizado
+                  Expanded(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: w * 0.05,
                         ),
-                        itemCount: 16,
-                        itemBuilder: (_, i) => GestureDetector(
-                          onTap: () => _controller.onCellTap(i),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            decoration: BoxDecoration(
-                              color: _controller.cellColor(i),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFFF5B51C), 
-                                width: 3,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            crossAxisSpacing: w * 0.02,
+                            mainAxisSpacing: w * 0.02,
+                            childAspectRatio: 1,
+                          ),
+                          itemCount: 16,
+                          itemBuilder: (_, i) => GestureDetector(
+                            onTap: () => _controller.onCellTap(i),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              decoration: BoxDecoration(
+                                color: _controller.cellColor(i),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: const Color(0xFFF5B51C),
+                                  width: 3,
+                                ),
                               ),
                             ),
                           ),
@@ -193,41 +194,32 @@ class _TwoGamePlusScreenState extends State<TwoGamePlusScreen> {
                     ),
                   ),
 
-                  SizedBox(height: w * 0.05),
-
-                  // Confirm button
-                  Padding(
-                    padding: EdgeInsets.only(bottom: w * 0.1),
-                    child: Column(
-                      children: [
-                        if (_controller.showConfirm)
-                          Padding(
-                            padding: EdgeInsets.only(top: w * 0.02),
-                            child: ElevatedButton(
-                              onPressed: _controller.confirmSelection,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF3088BE),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: w * 0.1, 
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                              child: Text(
-                                'Confirmar',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: w * 0.05,
-                                  fontFamily: 'Aclonica',
-                                ),
-                              ),
-                            ),
+                  // Botão de confirmar (somente na fase 1)
+                  if (_controller.showConfirm)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 20),
+                      child: ElevatedButton(
+                        onPressed: _controller.confirmSelection,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3088BE),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: w * 0.1,
+                            vertical: 16,
                           ),
-                      ],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text(
+                          'Confirmar',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: w * 0.05,
+                            fontFamily: 'Aclonica',
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

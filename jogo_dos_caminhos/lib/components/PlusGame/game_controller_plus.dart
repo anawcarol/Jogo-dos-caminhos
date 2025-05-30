@@ -21,6 +21,7 @@ class GameControllerPlus extends ChangeNotifier {
   bool player2Won = false; // Indica se o jogador 2 venceu
   String resultMessage = ''; // Mensagem final de resultado
   String? popupMsg; // Mensagem temporária de erro ou aviso (exibida em pop-up)
+  bool showChosenDest = false;
 
   GameControllerPlus() {
     initRound(); // Inicializa a primeira rodada
@@ -52,75 +53,86 @@ class GameControllerPlus extends ChangeNotifier {
   // Define se o botão "Confirmar" deve ser exibido
   bool get showConfirm => phase == Phase.selectDestP1;
 
+  // Retorna o índice do destino escolhido pelo Jogador 1
+  int get chosenDestIndex => destP1.indexWhere((e) => e);
+
   // Define a cor de uma célula com base no seu estado
   Color cellColor(int index) {
-    int row = index ~/ 4, col = index % 4;
+  int row = index ~/ 4, col = index % 4;
 
-    if (_isRestrictedDuringSelection(index)) return Colors.grey; // Células proibidas de seleção (início e fim)
-    if (_showDestP1() && destP1[index]) return const Color(0xFFF5B51C); // Destino escolhido pelo jogador 1 (amarelo)
-    if (visited[row][col]) return Colors.indigo[800]!; // Células já visitadas pelo jogador 2 (azul escuro)
-    return const Color.fromARGB(255, 39, 126, 136); // Células livres (cor padrão do tabuleiro)
+  if (_isRestrictedDuringSelection(index)) return Colors.grey;
+  
+  // Destaca o destino escolhido pelo jogador 1 no final
+  if (showChosenDest && destP1[index]) {
+    return Colors.orange; // Cor mais vibrante para destaque
   }
+  
+  if (_showDestP1() && destP1[index]) return const Color(0xFFF5B51C);
+  if (visited[row][col]) return Colors.indigo[800]!;
+  return const Color.fromARGB(255, 39, 126, 136);
+}
 
   // ---------- Interações do usuário ----------
 
   // Ação ao clicar em uma célula do tabuleiro
-  void onCellTap(int index) async {
-    // Se a célula é proibida durante a escolha do destino, exibe aviso
-    if (_isRestrictedDuringSelection(index)) {
-      popupMsg = 'Esta posição não pode ser selecionada como destino';
-      notifyListeners();
-      return;
-    }
+ void onCellTap(int index) async {
+  if (_isRestrictedDuringSelection(index)) {
+    popupMsg = 'Esta posição não pode ser selecionada como destino';
+    notifyListeners();
+    return;
+  }
 
-    // Se o jogo já terminou, ignora o toque
-    if (phase == Phase.finished) return;
+  if (phase == Phase.finished) return;
 
-    int row = index ~/ 4, col = index % 4;
+  int row = index ~/ 4, col = index % 4;
 
-    switch (phase) {
-      case Phase.selectDestP1:
-        // Marca apenas uma célula como destino (zera as demais)
-        destP1 = List.filled(16, false);
-        destP1[index] = true;
-        break;
-      case Phase.buildPathP2:
-        // Se o movimento for válido, atualiza posição e estado
-        if (_isValidMove(row, col)) {
-          curX = row;
-          curY = col;
-          visited[row][col] = true;
+  switch (phase) {
+    case Phase.selectDestP1:
+      destP1 = List.filled(16, false);
+      destP1[index] = true;
+      break;
+    case Phase.buildPathP2:
+      if (_isValidMove(row, col)) {
+        visited[row][col] = true;
+        curX = row;
+        curY = col;
 
-          // Verifica se passou pelo destino do jogador 1
-          if (destP1[index]) {
-            passedThroughDest = true;
-          }
+        if (destP1[index]) {
+          passedThroughDest = true;
+        }
 
-          // Verifica se chegou ao ponto final obrigatório
-          if (curX == 0 && curY == 3) {
-            phase = Phase.finished;
-
-            // Aguarda 3 segundos antes de exibir resultado
-            await Future.delayed(const Duration(seconds: 3));
-
-            // Define o vencedor com base em ter passado ou não pelo destino
-            if (passedThroughDest) {
-              player1Won = true;
-              resultMessage = 'Jogador 1 venceu!';
-            } else {
-              player2Won = true;
-              resultMessage = 'Jogador 2 venceu!';
-            }
+        if (curX == 0 && curY == 3) {
+          visited[curX][curY] = true;
+          notifyListeners();
+          
+          // Mostra o destino escolhido pelo jogador 1
+          showChosenDest = true;
+          notifyListeners();
+          
+          await Future.delayed(const Duration(seconds: 2)); // Tempo para visualização
+          
+          phase = Phase.finished;
+          showChosenDest = false;
+          notifyListeners();
+          
+          await Future.delayed(const Duration(milliseconds: 300));
+          
+          if (passedThroughDest) {
+            player1Won = true;
+            resultMessage = 'Jogador 1 venceu!';
+          } else {
+            player2Won = true;
+            resultMessage = 'Jogador 2 venceu!';
           }
         }
-        break;
-      default:
-        break;
-    }
-
-    // Notifica a interface para atualizar
-    notifyListeners();
+      }
+      break;
+    default:
+      break;
   }
+
+  notifyListeners();
+}
 
   // Confirma a escolha do Jogador 1 e passa para a próxima fase
   void confirmSelection() {

@@ -14,13 +14,13 @@ class _HowToPlayPvPlusScreenState extends State<HowToPlayPvPlusScreen> {
   // Lista de instruções dividida em páginas
   final List<List<String>> _instructions = [
     [
-      '• O jogo é disputado em 2 rodadas.',
-      '• 1ª rodada: Jogador 1 escolhe um destino (qualquer casa que não seja cinza). Jogador 2 traça o caminho até lá.',
-      '• 2ª rodada: o Jogador 2 traça um caminho conforme desejar.',
+      '• O jogo é disputado em 2 etapas.',
+      '• 1ª etapa: Jogador 1 escolhe um destino (qualquer casa que não seja cinza).',
+      '• 2ª etapa: o Jogador 2 traça um caminho conforme desejar.',
     ],
     [
-      '• Sendo possível mover apenas para direita ou para cima',
-      '• O jogador 1 vence o jogo caso o jogador 2 não consiga traçar o caminho pelo o seu ponto escolhido, caso o jogador 2 consiga, assim o jogador 2 vencerá o jogo.',
+      '• É possível mover apenas para direita ou para cima.',
+      '• Se o caminho do jogador 2 passar pelo ponto escolhido, o jogador 1 ganha. Caso contrário, o jogador 2 ganha.',
     ],
   ];
 

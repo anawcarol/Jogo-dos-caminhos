@@ -127,14 +127,14 @@ class GameModeScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.person_2_outlined,
+                        Icon(Icons.person_pin_circle_outlined,
                             size: screenWidth * 0.15, color: Color(0xFF257F98)),
                         SizedBox(
                             width: screenWidth *
                                 0.02), // Espaçamento entre os ícones
                         Image.asset('assets/imagens/image_vs.png'),
                         SizedBox(width: screenWidth * 0.02),
-                        Icon(Icons.person_2_outlined,
+                        Icon(Icons.run_circle_outlined,
                             size: screenWidth * 0.15, color: Color(0xFF257F98)),
                       ],
                     ),
