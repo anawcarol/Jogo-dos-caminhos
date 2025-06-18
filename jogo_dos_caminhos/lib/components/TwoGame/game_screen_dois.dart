@@ -69,7 +69,6 @@ class _GameScreenDoisState extends State<GameScreenDois> {
       blinkingCol = col;
     });
 
-    // Efeito de piscar 3 vezes (alternando entre a cor original e indigo)
     for (int i = 0; i < 3; i++) {
       setState(() {
         showIndigo = true;
@@ -83,7 +82,7 @@ class _GameScreenDoisState extends State<GameScreenDois> {
     }
 
     setState(() {
-      visitedPoints[row][col] = true; // Marca como visitado permanentemente
+      visitedPoints[row][col] = true;
       isBlinking = false;
       blinkingRow = null;
       blinkingCol = null;
@@ -121,7 +120,6 @@ class _GameScreenDoisState extends State<GameScreenDois> {
         path.add(Offset(currentX.toDouble(), currentY.toDouble()));
       });
 
-      // Verifica se passou pelo ponto do Player 1
       int indexP1 = widget.selectedLocationsPlayer1.indexWhere((e) => e);
       if (indexP1 != -1) {
         int rowP1 = indexP1 ~/ 4, colP1 = indexP1 % 4;
@@ -130,7 +128,6 @@ class _GameScreenDoisState extends State<GameScreenDois> {
         }
       }
 
-      // Verifica se passou pelo ponto do Player 2
       int indexP2 = widget.selectedLocationsPlayer2.indexWhere((e) => e);
       if (indexP2 != -1) {
         int rowP2 = indexP2 ~/ 4, colP2 = indexP2 % 4;
@@ -192,16 +189,16 @@ class _GameScreenDoisState extends State<GameScreenDois> {
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
         backgroundColor: const Color(0xFF3088BE),
-        padding: EdgeInsets.all(screenWidth * 0.05),
+        padding: EdgeInsets.all(screenWidth * 0.04),
         shadowColor: Colors.transparent,
         side: const BorderSide(
           color: Color(0xFFF5B51C),
-          width: 3,
+          width: 2,
         ),
       ),
       child: Icon(
         icon,
-        size: screenWidth * 0.07,
+        size: screenWidth * 0.06,
         color: const Color(0xFFF5B51C),
       ),
     );
@@ -210,6 +207,8 @@ class _GameScreenDoisState extends State<GameScreenDois> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenWidth < 375;
 
     return Scaffold(
       body: Container(
@@ -226,7 +225,10 @@ class _GameScreenDoisState extends State<GameScreenDois> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                padding: EdgeInsets.symmetric(
+                  vertical: isSmallScreen ? 12.0 : 16.0,
+                  horizontal: isSmallScreen ? 12.0 : 16.0,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -239,12 +241,12 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                         );
                       },
                     ),
-                    SizedBox(width: screenWidth * 0.05),
+                    SizedBox(width: isSmallScreen ? screenWidth * 0.04 : screenWidth * 0.05),
                     _buildNavigationButton(
                       icon: Icons.volume_up,
                       onPressed: () {},
                     ),
-                    SizedBox(width: screenWidth * 0.05),
+                    SizedBox(width: isSmallScreen ? screenWidth * 0.04 : screenWidth * 0.05),
                     _buildNavigationButton(
                       icon: Icons.arrow_back,
                       onPressed: () => Navigator.pop(context),
@@ -253,79 +255,85 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                 ),
               ),
 
-              const SizedBox(height: 30.0),
+              SizedBox(height: isSmallScreen ? 12.0 : 16.0),
 
               // Title
               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
+                padding: EdgeInsets.only(top: isSmallScreen ? 8.0 : 12.0),
                 child: Center(
                   child: Text(
                     'Jogo em andamento',
                     style: TextStyle(
                       color: const Color(0xFFF5B51C),
-                      fontSize: screenWidth * 0.07,
+                      fontSize: isSmallScreen ? screenWidth * 0.055 : screenWidth * 0.06,
                       fontFamily: 'Aclonica',
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 30.0),
+              SizedBox(height: isSmallScreen ? 12.0 : 16.0),
 
-              // Game Grid
+              // Game Grid - Tamanho reduzido
               Flexible(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.05,
-                    vertical: 2.0,
+                    horizontal: isSmallScreen ? screenWidth * 0.03 : screenWidth * 0.05,
                   ),
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      crossAxisSpacing: screenWidth * 0.02,
-                      mainAxisSpacing: screenWidth * 0.02,
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: 16,
-                    itemBuilder: (context, index) {
-                      int row = index ~/ 4, col = index % 4;
-                      bool isSelectedP1 = widget.selectedLocationsPlayer1[index];
-                      bool isSelectedP2 = widget.selectedLocationsPlayer2[index];
-                      bool wasVisited = visitedPoints[row][col];
-                      bool isBlinkingNow = isBlinking && blinkingRow == row && blinkingCol == col;
-
-                      Color getCellColor() {
-                        if (wasVisited) return Colors.indigo[800]!;
-                        if (isBlinkingNow) return showIndigo ? Colors.indigo[800]! : 
-                            (isSelectedP1 ? const Color(0xFFF5B51C) : const Color.fromARGB(255, 7, 62, 77));
-                        if (isSelectedP1) return const Color(0xFFF5B51C);
-                        if (isSelectedP2) return const Color.fromARGB(255, 7, 62, 77);
-                        return matrix[row][col] ? Colors.indigo[800]! : const Color.fromARGB(255, 39, 126, 136);
-                      }
-
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
-                        decoration: BoxDecoration(
-                          color: getCellColor(),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFF5B51C),
-                            width: 3,
-                          ),
+                  child: Center(
+                    child: SizedBox(
+                      width: isSmallScreen ? screenWidth * 0.8 : screenWidth * 0.7,
+                      child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: isSmallScreen ? screenWidth * 0.015 : screenWidth * 0.02,
+                          mainAxisSpacing: isSmallScreen ? screenWidth * 0.015 : screenWidth * 0.02,
+                          childAspectRatio: 1,
                         ),
-                      );
-                    },
+                        itemCount: 16,
+                        itemBuilder: (context, index) {
+                          int row = index ~/ 4, col = index % 4;
+                          bool isSelectedP1 = widget.selectedLocationsPlayer1[index];
+                          bool isSelectedP2 = widget.selectedLocationsPlayer2[index];
+                          bool wasVisited = visitedPoints[row][col];
+                          bool isBlinkingNow = isBlinking && blinkingRow == row && blinkingCol == col;
+
+                          Color getCellColor() {
+                            if (wasVisited) return Colors.indigo[800]!;
+                            if (isBlinkingNow) return showIndigo ? Colors.indigo[800]! : 
+                                (isSelectedP1 ? const Color(0xFFF5B51C) : const Color.fromARGB(255, 7, 62, 77));
+                            if (isSelectedP1) return const Color(0xFFF5B51C);
+                            if (isSelectedP2) return const Color.fromARGB(255, 7, 62, 77);
+                            return matrix[row][col] ? Colors.indigo[800]! : const Color.fromARGB(255, 39, 126, 136);
+                          }
+
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 150),
+                            decoration: BoxDecoration(
+                              color: getCellColor(),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFFF5B51C),
+                                width: isSmallScreen ? 2 : 2.5,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 30.0),
+              SizedBox(height: isSmallScreen ? 12.0 : 16.0),
 
               // Controls
               Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+                padding: EdgeInsets.only(
+                  bottom: isSmallScreen ? 12.0 : 16.0,
+                  top: isSmallScreen ? 8.0 : 12.0,
+                ),
                 child: Column(
                   children: [
                     Center(
@@ -333,55 +341,56 @@ class _GameScreenDoisState extends State<GameScreenDois> {
                         ballColor != null ? 'Bola Sorteada:' : 'Clique em Seguir para começar',
                         style: TextStyle(
                           color: const Color(0xFFF5B51C),
-                          fontSize: screenWidth * 0.05,
+                          fontSize: isSmallScreen ? screenWidth * 0.04 : screenWidth * 0.045,
                           fontFamily: 'Aclonica',
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8.0),
+                    SizedBox(height: isSmallScreen ? 8.0 : 12.0),
                     Container(
-                      width: screenWidth * 0.2,
-                      height: screenWidth * 0.2,
+                      width: isSmallScreen ? screenWidth * 0.15 : screenWidth * 0.2,
+                      height: isSmallScreen ? screenWidth * 0.15 : screenWidth * 0.2,
                       decoration: BoxDecoration(
                         color: ballColor ?? Colors.transparent,
                         shape: BoxShape.circle,
                         boxShadow: ballColor != null ? [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.5),
-                            blurRadius: 10,
-                            offset: const Offset(5, 5),
+                            blurRadius: 8,
+                            offset: const Offset(4, 4),
                           ),
                         ] : [],
                       ),
                     ),
-                    const SizedBox(height: 8.0),
+                    SizedBox(height: isSmallScreen ? 8.0 : 12.0),
                     if (ballColor != null)
                       Text(
                         ballColor == Colors.green ? 'Para direita' : 'Para cima',
                         style: TextStyle(
                           color: const Color(0xFFF5B51C),
-                          fontSize: screenWidth * 0.045,
+                          fontSize: isSmallScreen ? screenWidth * 0.035 : screenWidth * 0.04,
                           fontFamily: 'Aclonica',
                         ),
                       ),
-                    const SizedBox(height: 16.0),
+                    SizedBox(height: isSmallScreen ? 12.0 : 16.0),
+                    // Botão Seguir menor
                     ElevatedButton(
                       onPressed: gameFinished ? null : _sortearBola,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF3088BE),
                         padding: EdgeInsets.symmetric(
-                          horizontal: screenWidth * 0.1,
-                          vertical: 16.0,
+                          horizontal: isSmallScreen ? screenWidth * 0.08 : screenWidth * 0.1,
+                          vertical: isSmallScreen ? 10.0 : 12.0,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(25),
                         ),
                       ),
                       child: Text(
                         gameFinished ? 'Jogo Finalizado' : 'Seguir',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: screenWidth * 0.06,
+                          fontSize: isSmallScreen ? screenWidth * 0.04 : screenWidth * 0.045,
                           fontFamily: 'Aclonica',
                         ),
                       ),

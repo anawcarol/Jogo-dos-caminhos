@@ -1,12 +1,19 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'components/home_screen.dart';
-import 'components/SoloGame/win_game.dart';
-import 'components/SoloGame/kill_game.dart';
-import 'components/TwoGame/win_screen.dart';
+import 'package:flutter/services.dart';
+
 
 
 void main() {
+  // Configurações para tela cheia:
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky); // Modo imersivo
+  SystemChrome.setPreferredOrientations([ // Trava a orientação (opcional)
+    DeviceOrientation.landscapeLeft,  // Para jogos horizontais
+    DeviceOrientation.landscapeRight,
+    // DeviceOrientation.portraitUp,  // Use para jogos verticais
+  ]);
+  
   runApp(MyApp());
 }
 

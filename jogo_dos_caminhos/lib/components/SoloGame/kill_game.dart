@@ -60,8 +60,8 @@ class KillScreen extends StatelessWidget {
             // Imagem do troféu aumentada e melhor posicionada
             Image.asset(
               'assets/imagens/image.png',
-              width: screenWidth * 0.8,  // Igual ao da tela WinScreen
-              height: screenHeight * 0.5, // Igual ao da tela WinScreen
+              width: screenWidth * 0.6,  // Igual ao da tela WinScreen
+              height: screenHeight * 0.4, // Igual ao da tela WinScreen
               fit: BoxFit.contain,
             ),
 
